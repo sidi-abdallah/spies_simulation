@@ -6,7 +6,7 @@ The *ncurses* TUI (*Terminal User Interface*) will give better results using
 The "Meslo LG L for Powerline" font that should already be installed. The font
 can also be downloaded at [https://github.com/powerline/fonts](https://github.com/powerline/fonts).
 
-![The monitor program](./doc/figures/monitor.png)
+![The monitor program](./doc/figures/spies_monitor.png)
 
 ## Resources
  
