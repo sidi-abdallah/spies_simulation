@@ -3,14 +3,20 @@
 ## Monitor program
 
 The *ncurses* TUI (*Terminal User Interface*) will give better results using 
-The "Meslo LG L for Powerline" font that should already be installed. The font
-can also be downloaded at [https://github.com/powerline/fonts](https://github.com/powerline/fonts).
+The "Meslo LG L for Powerline" font that should already be installed on your
+system. The font can also be downloaded at [https://github.com/powerline/fonts](https://github.com/powerline/fonts).
+
+Here is what you should see by running "`bin/monitor`" from the root of your 
+project, once you will have implemented the shared memory ("`memory_t`" 
+structure).
 
 ![The monitor program](./doc/figures/spies_monitor.png)
 
 ## Design patterns
 
-Some patterns are included and could be used in the project.
+Some patterns are included and could be used in the project (see in [src/pattern_example](src/pattern_examples)).
+
+More useful information about patterns can be found in Régis Clouard's [course](https://foad.ensicaen.fr/course/view.php?id=62) and also [here](https://refactoring.guru/design-patterns/examples).
 
 ## Others resources
  
