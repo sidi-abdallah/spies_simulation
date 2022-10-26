@@ -1,12 +1,12 @@
 # Spies 2022 
 
-## Execution
+## Monitor program
 
 The *ncurses* TUI (*Terminal User Interface*) will give better results using 
 The "Meslo LG L for Powerline" font that should already be installed. The font
 can also be downloaded at [https://github.com/powerline/fonts](https://github.com/powerline/fonts).
 
-The TUI could be enhanced using the [CDK](https://invisible-island.net/cdk) library.
+![The monitor program](doc/figures/monitor.png)
 
 ## Resources
  
