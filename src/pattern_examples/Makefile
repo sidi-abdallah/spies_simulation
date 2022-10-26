@@ -1,25 +1,25 @@
 CC=gcc
-CPPFLAGS=
+CPPFLAGS=-I. -I./facade -I./factory -I./observer -I./state
 CFLAGS=-Wall -Wextra -pedantic -g
-EXEC= singleton factory facade observer state
+EXEC=factory.bin facade.bin observer.bin state_character.bin
 
 .PHONY: all clean
 
 all: $(EXEC)
 
-singleton: singleton.c
+singleton.bin: singleton.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
 
-factory: factory.c
+factory.bin: factory/main.c factory/factory.c logger.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
 
-facade: facade.c
+facade.bin: facade/main.c facade/facade.c logger.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
 
-observer: observer.c
+observer.bin: observer/main.c observer/observer.c logger.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
 
-state: state/main.c state/character.c
+state_character.bin: state/main.c state/character.c logger.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
 
 clean:

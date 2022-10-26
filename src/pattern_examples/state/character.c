@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "logger.h"
+#include "../logger.h"
 #include "character.h"
 
 state_t *new_state(int id, state_t *(*action)(character_t *))
