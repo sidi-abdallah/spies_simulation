@@ -7,9 +7,6 @@ EXEC=factory.bin facade.bin observer.bin state_character.bin
 
 all: $(EXEC)
 
-singleton.bin: singleton.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
-
 factory.bin: factory/main.c factory/factory.c logger.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
 
