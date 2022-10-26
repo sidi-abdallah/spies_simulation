@@ -1,4 +1,4 @@
-# Resources for the spies2022 project 
+# Resources for the "License to kill" project 
 
 ## Monitor program
 
