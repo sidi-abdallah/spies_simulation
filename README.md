@@ -1,4 +1,4 @@
-# Spies 2022 
+# Resources for the spies2022 project 
 
 ## Monitor program
 
@@ -8,7 +8,7 @@ can also be downloaded at [https://github.com/powerline/fonts](https://github.co
 
 ![The monitor program](./doc/figures/spies_monitor.png)
 
-## Resources
+## Others resources
  
 - An interesting C language guide: [Beej homepage](https://beej.us/guide/bgc/html/split/index.html)
 - Coding style: see [here](https://projectacrn.github.io/latest/developer-guides/c_coding_guidelines.html#c-ty-08-the-struct-field-type-shall-be-consistent)
