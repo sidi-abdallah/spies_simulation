@@ -8,6 +8,10 @@ can also be downloaded at [https://github.com/powerline/fonts](https://github.co
 
 ![The monitor program](./doc/figures/spies_monitor.png)
 
+## Design patterns
+
+Some patterns are included and could be used in the project.
+
 ## Others resources
  
 - An interesting C language guide: [Beej homepage](https://beej.us/guide/bgc/html/split/index.html)
