@@ -15,6 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <stdio.h>
+#include <time.h>
+#include <string.h>
+#include <stdarg.h>
+
 #include "logger.h"
 
 void log_format(const char *tag, const char *message, va_list args)

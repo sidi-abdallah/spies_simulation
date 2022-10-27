@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "memory.h"
 #include "observer.h"
 #include "logger.h"
 
