@@ -14,7 +14,7 @@ structure).
 
 ## Design patterns
 
-Some patterns are included and could be used in the project (see in [src/pattern_example](src/pattern_examples)).
+Some patterns are included and could be used in the project (see in [src/pattern_examples](src/pattern_examples)).
 
 More useful information about patterns can be found in Régis Clouard's [course](https://foad.ensicaen.fr/course/view.php?id=62) and also [here](https://refactoring.guru/design-patterns/examples).
 
