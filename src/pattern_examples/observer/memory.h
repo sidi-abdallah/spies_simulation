@@ -1,5 +1,5 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef MEMORY_OBS_H
+#define MEMORY_OBS_H
 
 #define MAX_OBSERVERS 3
 
@@ -25,4 +25,4 @@ void memory_attach(memory_t *memory, observer_t *obs);
 void memory_detach(memory_t *memory, observer_t *obs);
 void memory_notify(memory_t *memory, event_t e);
 
-#endif /* MEMORY_H */
+#endif /* MEMORY_OBS_H */

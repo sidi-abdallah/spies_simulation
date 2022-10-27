@@ -4,6 +4,8 @@
 #ifndef FACADE_H
 #define FACADE_H
 
+typedef struct memory_s memory_t;
+
 #include "memory.h"
 
 /*

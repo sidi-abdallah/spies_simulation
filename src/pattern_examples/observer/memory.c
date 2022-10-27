@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "logger.h"
+#include "observer.h"
 #include "memory.h"
 
 memory_t * new_memory(void)
@@ -28,8 +29,8 @@ void memory_attach(memory_t *memory, observer_t *obs)
 {
     for (int i = 0; i < MAX_OBSERVERS; i++) {
         if (memory->obs[i] == NULL) {
-            log_info("Shared memory attaching observer %d", obs->pid);
             memory->obs[i] = obs;
+            log_info("Shared memory attaching observer %d", obs);
             break;
         }
     }
@@ -39,7 +40,7 @@ void memory_detach(memory_t *memory, observer_t *obs)
 {
     for (int i = 0; i < MAX_OBSERVERS; i++) {
         if (memory->obs[i] == obs) {
-            log_info("Memory detaching observer %d", obs->pid);
+            log_info("Memory detaching observer %d", obs);
             memory->obs[i] = NULL;
             break;
         }

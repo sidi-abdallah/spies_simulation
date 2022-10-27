@@ -3,7 +3,6 @@
 
 #include "facade.h"
 
-typedef struct memory_s memory_t;
 
 struct memory_s {
     /*
