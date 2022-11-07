@@ -26,7 +26,10 @@
 
 #include <ncurses.h>
 
-#include "xxxxxxxx.h"
+#include "memory.h"
+
+/** The number of fields to display for a spy. */
+#define NB_OF_INFORMATION_FIELDS 8
 
 struct monitor_s {
     int has_to_update;

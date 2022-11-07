@@ -15,12 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
 
 #include "monitor_common.h"
 #include "monitor.h"
-#include "xxxxxxxxxx.h"
+#include "memory.h"
 
 extern WINDOW *main_window;
 extern int old_cursor;
@@ -47,7 +49,7 @@ int main(int argc, char **argv)
     memory_t *memory;
     monitor_t *monitor;
 
-    memory = access_memory(SHM_NAME);
+    /* Access to memory */
 
     monitor = (monitor_t *)malloc(sizeof(monitor_t));
     monitor->has_to_update = 0;

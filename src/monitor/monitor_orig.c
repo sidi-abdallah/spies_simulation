@@ -19,8 +19,7 @@
 #include <ncurses.h>
 
 #include "monitor.h"
-#include "monitor_common.h"
-#include "memory.h"
+#include "xxxxxxxxxxx.h"
 
 WINDOW *main_window;
 WINDOW *city_window;
@@ -85,11 +84,6 @@ void create_color_pairs()
 
 void init_monitor_elements(WINDOW *window, memory_t *mem, int rows, int columns)
 {
-    /* --------------------------------------------------------------------- */
-    /*                 Get information from mem to get the map               */
-	map_t map;
-   /* ---------------------------------------------------------------------- */
-
     set_monitor_title(window, "LICENSE TO KILL (v. 0.2)");
 
     city_window = subwin(window, rows / 2 + 8, columns / 2, 2, 0);                   /* Top left */
@@ -103,7 +97,7 @@ void init_monitor_elements(WINDOW *window, memory_t *mem, int rows, int columns)
     box(enemy_country_monitor, 0, 0);
 
     show_general_information(city_window);
-    display_city(city_window, map, rows, columns);
+    display_city(city_window, mem->map, rows, columns);
     display_character_information(character_window, mem);
     display_mailbox_content(mailbox_content_window, mem);
     display_enemy_country_monitor(enemy_country_monitor);
@@ -143,27 +137,16 @@ void set_city_legend(WINDOW *window, int row, int col)
 
 void display_city(WINDOW *window, map_t map, int rows, int columns)
 {
-    /* --------------------------------------------------------------------- */
-    /*                 Get information from map to display city              */
-    int map_columns;
-    int map_rows;
-    int type;
-
-    map_columns = 7;
-    map_rows = 7;
-    type = 0;
-   /* ---------------------------------------------------------------------- */
-
     int row_offset;
     int col_offset;
 
     set_city_legend(window, 6, 2);
 
-    for (int i = 0; i < map_columns; i++) {
-        for (int j = 0; j < map_rows; j++) {
+    for (int i = 0; i < map.columns; i++) {
+        for (int j = 0; j < map.rows; j++) {
             row_offset = (rows / 6) + j;
             col_offset = (columns / 5) + (i * 3);
-            switch (type) {
+            switch (map.cells[j][i].type) {
                 case SUPERMARKET:
                     wattron(window, colored_text[COLOR_YELLOW]);
                     mvwaddstr(window, row_offset, col_offset, " s ");
@@ -220,25 +203,20 @@ void show_general_information(WINDOW *window)
 
 void display_general_information_values(WINDOW *window, memory_t *mem)
 {
-    /* --------------------------------------------------------------------- */
-    /*                 Get information from mem about simulation             */
     double elapsed_time;
-    int simulation_has_ended;
     int hour;
     int minutes;
     char *result = NULL;
 
-    elapsed_time = 0;
-    simulation_has_ended = 0;
-    hour = 0;
-    minutes = 0;
-   /* ---------------------------------------------------------------------- */
+    elapsed_time = steps_to_half_hours(mem->elapsed_time);
+    hour = (int) elapsed_time;
+    minutes = ((elapsed_time - hour) > 0) ? 30 : 00;
 
-    mvwprintw(window, 20, 8, "%d", elapsed_time);
+    mvwprintw(window, 20, 8, "%d", mem->elapsed_time);
     mvwprintw(window, 20, 26, "       ");
     mvwprintw(window, 20, 26, "%.2d h %.2d", hour, minutes);
-    if (simulation_has_ended > 0) {
-        switch (simulation_has_ended) {
+    if (mem->simulation_has_ended > 0) {
+        switch (mem->simulation_has_ended) {
             case 1:
                 result = "Spies have won! The spy network has fled!";
                 break;
@@ -259,17 +237,22 @@ void display_general_information_values(WINDOW *window, memory_t *mem)
 
 void display_citizen_information(WINDOW *window, memory_t *mem, int row, int column)
 {
-    /* --------------------------------------------------------------------- */
-    /*                 Get information from mem about citizens               */
-    int number_of_citizens_at_home;
-    int number_of_citizens_at_work;
-    int number_of_citizens_walking;
+    int i;
+    int number_of_citizens_at_home = 0;
+    int number_of_citizens_at_work = 0;
+    int number_of_citizens_walking = 0;
+    citizen_t current_citizen;
 
-    number_of_citizens_at_home = 128;
-    number_of_citizens_at_work = 0;
-    number_of_citizens_walking = 0;
-   /* ---------------------------------------------------------------------- */
-
+    for (i = 0; i < NUMBER_OF_CITIZENS; i++) {
+        current_citizen = mem->characters.citizens[i];
+        if (compare_cells(current_citizen.home, current_citizen.location)) {
+            number_of_citizens_at_home++;
+        } else if (compare_cells(current_citizen.working_place, current_citizen.location)) {
+            number_of_citizens_at_work++;
+        } else {
+            number_of_citizens_walking++;
+        }
+    }
     wattron(window, A_BOLD);
     mvwprintw(window, row, column, "Citizens");
     wattroff(window, A_BOLD);
@@ -281,43 +264,24 @@ void display_citizen_information(WINDOW *window, memory_t *mem, int row, int col
 
 void display_spy_information(WINDOW *window, memory_t *mem, int row, int column, int number)
 {
-    /* --------------------------------------------------------------------- */
-    /*     Get information from mem about the spy with the given number      */
-    int id;
-    int health_points;
-    int location_row;
-    int location_column;
-    int home_row;
-    int home_column;
-    int nb_of_stolen_companies;
-    int has_license_to_kill;
-    char stolen_message_content[MAX_LENGTH_OF_MESSAGE];
+    spy_t spy;
 
-    id = 0;
-    health_points = 10;
-    location_row = 0;
-    location_column = 0;
-    home_row = 0;
-    home_column = 0;
-    nb_of_stolen_companies = 0;
-    has_license_to_kill = 0;
-    strcpy(stolen_message_content, "bla bla bla");	
-   /* ---------------------------------------------------------------------- */
+    spy = mem->characters.spies[number];
 
     wattron(window, A_BOLD);
     mvwprintw(window, row, column, "Spy n°%d", number);
     wattroff(window, A_BOLD);
-    mvwprintw(window, row + 1, column, "  Id: %d", id);
-    mvwprintw(window, row + 2, column, "  Health: %d", health_points);
-    mvwprintw(window, row + 3, column, "  Position: (%d,%d)", location_row, location_column);
-    mvwprintw(window, row + 4, column, "  Home pos: (%d,%d)", home_row, home_column);
-    mvwprintw(window, row + 5, column, "  Stolen companies: %d", nb_of_stolen_companies);
-    if (strcmp(stolen_message_content, EMPTY) == 0) {
+    mvwprintw(window, row + 1, column, "  Id: %d", spy.id);
+    mvwprintw(window, row + 2, column, "  Health: %d", spy.health_points);
+    mvwprintw(window, row + 3, column, "  Position: (%d,%d)", spy.location.row, spy.location.column);
+    mvwprintw(window, row + 4, column, "  Home pos: (%d,%d)", spy.home.row, spy.home.column);
+    mvwprintw(window, row + 5, column, "  Stolen companies: %d", spy.nb_of_stolen_companies);
+    if (strcmp(spy.stolen_message.content, EMPTY) == 0) {
         mvwprintw(window, row + 6, column, "  Message stolen: none");
     } else {
         mvwprintw(window, row + 6, column, "  Message stolen: yes ");
     }
-    if (has_license_to_kill) {
+    if (spy.has_license_to_kill) {
         mvwaddstr(window, row + 7, column, "  License to kill: yes");
     } else {
         mvwaddstr(window, row + 7, column, "  License to kill: no ");
@@ -327,76 +291,41 @@ void display_spy_information(WINDOW *window, memory_t *mem, int row, int column,
 
 void display_case_officer_information(WINDOW *window, memory_t *mem, int row, int column)
 {
-    /* --------------------------------------------------------------------- */
-    /*           Get information from mem about the case officer             */
-    int id;
-    int health_points;
-    int location_row;
-    int location_column;
-    int home_row;
-    int home_column;
-    int mailbox_row;
-    int mailbox_column;
+    case_officer_t co;
 
-    id = 0;
-    health_points = 10;
-    location_row = 0;
-    location_column = 0;
-    home_row = 0;
-    home_column = 0;
-    mailbox_row = 0;
-    mailbox_column = 0;
-   /* ---------------------------------------------------------------------- */
+    co = mem->characters.case_officers[0];
 
     wattron(window, A_BOLD);
     mvwprintw(window, row, column, "Case Officer");
     wattroff(window, A_BOLD);
-    mvwprintw(window, row + 1, column, "  Id: %d", id);
-    mvwprintw(window, row + 2, column, "  Health: %d", health_points);
-    mvwprintw(window, row + 3, column, "  Position: (%d,%d)", location_row, location_column);
-    mvwprintw(window, row + 4, column, "  Home pos: (%d,%d)", home_row, home_column);
-    mvwprintw(window, row + 5, column, "  Mailbox pos: (%d,%d)", mailbox_row, mailbox_column);
+    mvwprintw(window, row + 1, column, "  Id: %d", co.id);
+    mvwprintw(window, row + 2, column, "  Health: %d", co.health_points);
+    mvwprintw(window, row + 3, column, "  Position: (%d,%d)", co.location.row, co.location.column);
+    mvwprintw(window, row + 4, column, "  Home pos: (%d,%d)", co.home.row, co.home.column);
+    mvwprintw(window, row + 5, column, "  Mailbox pos: (%d,%d)", co.mailbox.row, co.mailbox.column);
 }
 
 void display_counterintelligence_officer_information(WINDOW *window, memory_t *mem, int row, int col)
 {
-    /* --------------------------------------------------------------------- */
-    /*    Get information from mem about the counterintelligence officer     */
-    int id;
-    int health_points;
-    int location_row;
-    int location_column;
-    int city_hall_row;
-    int city_hall_column;
-    int mailbox_row;
-    int mailbox_column;
-    int targeted_character_id;
+    counterintelligence_officer_t cio;
 
-    id = 0;
-    health_points = 10;
-    location_row = 0;
-    location_column = 0;
-    city_hall_row = 0;
-    city_hall_column = 0;
-    mailbox_row = 0;
-    mailbox_column = 0;
-    targeted_character_id = 0;
-   /* ---------------------------------------------------------------------- */
-	
+    cio = mem->characters.counter_officers[0];
+
     wattron(window, A_BOLD);
     mvwprintw(window, row, col, "Counterintelligence Officer");
     wattroff(window, A_BOLD);
-    mvwprintw(window, row + 1, col, "  Id: %d", id);
-    mvwprintw(window, row + 2, col, "  Health: %d", health_points);
-    mvwprintw(window, row + 3, col, "  Position: (%d,%d)", location_row, location_column);
-    mvwprintw(window, row + 4, col, "  City Hall pos: (%d,%d)", city_hall_row, city_hall_column);
-    if (location_row != -1) {
-        mvwprintw(window, row + 5, col, "  Mailbox pos: (%d,%d)    ", mailbox_row, mailbox_column);
+    mvwprintw(window, row + 1, col, "  Id: %d", cio.id);
+    mvwprintw(window, row + 2, col, "  Health: %d", cio.health_points);
+    mvwprintw(window, row + 3, col, "  Position: (%d,%d)", cio.location.row, cio.location.column);
+    mvwprintw(window, row + 4, col, "  City Hall pos: (%d,%d)", cio.city_hall.row, cio.city_hall.column);
+    if (co.mailbox_location.row != -1) {
+        mvwprintw(window, row + 5, col, "  Mailbox pos: (%d,%d)    ", cio.mailbox_location.row,
+                  cio.mailbox_location.column);
     } else {
         mvwprintw(window, row + 5, col, "  Mailbox pos: not found");
     }
     mvwprintw(window, row + 6, col, "  Target:     ");
-    mvwprintw(window, row + 6, col, "  Target: %d", targeted_character_id);
+    mvwprintw(window, row + 6, col, "  Target: %d", cio.targeted_character_id);
 
     wrefresh(window);
 }
@@ -426,17 +355,6 @@ void display_character_information(WINDOW *window, memory_t *mem)
 
 void display_mailbox_content(WINDOW *window, memory_t *mem)
 {
-    /* --------------------------------------------------------------------- */
-    /*              Get information from mem about the mailbox               */
-    int mailbox_nb_of_msgs;
-    int priority;
-    char content[MAX_LENGTH_OF_MESSAGE];
-
-    mailbox_nb_of_msgs;
-    priority;
-    content[MAX_LENGTH_OF_MESSAGE];
-   /* ---------------------------------------------------------------------- */
-
     int i;
     int title_column;
     int nb_lines;
@@ -449,14 +367,14 @@ void display_mailbox_content(WINDOW *window, memory_t *mem)
     wattroff(window, A_BOLD | A_UNDERLINE);
 
     nb_lines = 3;
-    for (i = 0; i < mailbox_nb_of_msgs; i++) {
+    for (i = 0; i < mem->mailbox_nb_of_msgs; i++) {
 		clear_line(window, nb_lines);
-        if (strcmp(content, FAKE_MESSAGE) == 0) {
+        if (strcmp(mem->mailbox_content[i].content, FAKE_MESSAGE) == 0) {
             mvwprintw(window, nb_lines, 2, ">> [%d] %s (P%d)", (i + 1), "FAKE MESSAGE",
-                      priority);
+                      mem->mailbox_content[i].priority);
         } else {
             mvwprintw(window, nb_lines, 2, ">> [%d] %s (P%d)", (i + 1),
-                      content, priority);
+                      mem->mailbox_content[i].content, mem->mailbox_content[i].priority);
         }
         nb_lines += 1;
     }
@@ -468,7 +386,7 @@ void display_enemy_country_monitor(WINDOW *window)
 {
     int nb_lines;
     int title_column;
-    char buffer[MAX_LENGTH_OF_MESSAGE];
+    char buffer[MAX_MESSAGE_LENGTH];
     char *title = "ENEMY COUNTRY MONITOR";
 
     nb_lines = 1;
@@ -495,6 +413,6 @@ void update_values(memory_t *mem) {
     display_character_information(character_window, mem);
     display_mailbox_content(mailbox_content_window, mem);
     display_enemy_country_monitor(enemy_country_monitor);
-	mem->memory_has_changed = 0;
+    mem->memory_has_changed = 0;
 }
 

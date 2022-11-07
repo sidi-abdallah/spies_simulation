@@ -2,13 +2,13 @@ CC=gcc
 CFLAGS=-Wall -Wextra -pedantic -O2 -g
 
 # Compilation under MacOS X or Linux
-ifeq ($(uname -s), Darwin)
+#ifeq ($(uname -s), Darwin)
     CPPFLAGS=-D_REENTRANT -I./include -I/usr/local/Cellar/ncurses/6.3/include
     LDFLAGS=-L/usr/local/Cellar/ncurses/6.3/lib -lncurses -lpthread -lm
-else
-    CPPFLAGS=-D_REENTRANT -I./include
-    LDFLAGS=-lncurses -lpthread -lrt -lm
-endif
+#else
+#    CPPFLAGS=-D_REENTRANT -I./include
+#    LDFLAGS=-lncurses -lpthread -lrt -lm
+#endif
 
 .PHONY: all clean distclean
 
@@ -20,7 +20,7 @@ all: bin/monitor
 bin/monitor: src/monitor/main.o \
              src/monitor/monitor.o \
              src/monitor/monitor_common.o \
-             src/logger.o
+             src/common/logger.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 src/monitor/main.o: src/monitor/main.c include/monitor.h include/monitor_common.h

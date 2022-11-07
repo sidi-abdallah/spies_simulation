@@ -23,7 +23,7 @@
 #include <ncurses.h>
 
 #include "monitor_common.h"
-#include "xxxxxxxxxx.h"
+#include "memory.h"
 
 extern WINDOW *main_window;
 extern WINDOW *city_window;
@@ -44,7 +44,10 @@ void quit_after_error(const char *msg)
     curs_set(old_cursor);
     endwin();
     refresh();
-    cleanup_memory(mem);
+	
+    /* Do not forget to clean shared memory calling a function*/
+	/* cleanup_memory(mem); */
+
     perror(msg);
 
     exit(EXIT_FAILURE);
@@ -61,7 +64,8 @@ void quit_nicely(int reason)
     endwin();
     refresh();
 
-    cleanup_memory(mem);
+    /* Do not forget to clean shared memory calling a function*/
+	/* cleanup_memory(mem); */
 
     switch (reason) {
         default:
