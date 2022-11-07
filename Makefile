@@ -2,13 +2,15 @@ CC=gcc
 CFLAGS=-Wall -Wextra -pedantic -O2 -g
 
 # Compilation under MacOS X or Linux
-#ifeq ($(uname -s), Darwin)
+UNAME=$(shell uname -s)
+ifeq ($(UNAME),Darwin)
     CPPFLAGS=-D_REENTRANT -I./include -I/usr/local/Cellar/ncurses/6.3/include
     LDFLAGS=-L/usr/local/Cellar/ncurses/6.3/lib -lncurses -lpthread -lm
-#else
-#    CPPFLAGS=-D_REENTRANT -I./include
-#    LDFLAGS=-lncurses -lpthread -lrt -lm
-#endif
+endif
+ifeq ($(UNAME),Linux)
+    CPPFLAGS=-D_REENTRANT -I./include
+    LDFLAGS=-lncurses -lpthread -lrt -lm
+endif
 
 .PHONY: all clean distclean
 
