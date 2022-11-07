@@ -49,7 +49,12 @@ int main(int argc, char **argv)
     memory_t *memory;
     monitor_t *monitor;
 
-    /* Access to memory */
+    /* ---------------------------------------------------------------------- */ 
+    /* The following code only allows to avoid segmentation fault !           */ 
+    /* Change it to access to the real shared memory.                         */
+    memory = (memory_t *)malloc(sizeof(memory_t)); 
+    memory->memory_has_changed =  1;
+    /* ---------------------------------------------------------------------- */ 
 
     monitor = (monitor_t *)malloc(sizeof(monitor_t));
     monitor->has_to_update = 0;

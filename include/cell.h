@@ -29,8 +29,6 @@
  * - SUPERMARKET (\e SUPERMARKET).
  */
 
-typedef enum cell_type_e cell_type_t;
-typedef struct cell_s cell_t;
 
 /**
  * The type of cells within the city map.
@@ -42,6 +40,9 @@ enum cell_type_e {
     COMPANY,              /*!< A cell that contains a company. */
     SUPERMARKET           /*!< A cell that contains a supermarket. */
 };
+
+typedef enum cell_type_e cell_type_t;
+typedef struct cell_s cell_t;
 
 /**
  * \brief A cell within the map of the city.

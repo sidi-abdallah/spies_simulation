@@ -45,7 +45,7 @@ src/common/logger.o: src/common/logger.c include/logger.h
 # CLEANING
 # ----------------------------------------------------------------------------
 clean:
-	rm src/*.o src/monitor/*.o src/common/*.o
+	rm src/monitor/*.o src/common/*.o
 
 distclean: clean
 	rm bin/monitor

@@ -150,8 +150,8 @@ void display_city(WINDOW *window, map_t map, int rows, int columns)
     int type;
 
     map_columns = 7;
-    map_rows = 7;
-    type = 0;
+    map_rows    = 7;
+    type        = 0;
    /* ---------------------------------------------------------------------- */
 
     int row_offset;
@@ -228,10 +228,10 @@ void display_general_information_values(WINDOW *window, memory_t *mem)
     int minutes;
     char *result = NULL;
 
-    elapsed_time = 0;
+    elapsed_time         = 0;
     simulation_has_ended = 0;
-    hour = 0;
-    minutes = 0;
+    hour                 = 0;
+    minutes              = 0;
    /* ---------------------------------------------------------------------- */
 
     mvwprintw(window, 20, 8, "%d", elapsed_time);
@@ -293,14 +293,14 @@ void display_spy_information(WINDOW *window, memory_t *mem, int row, int column,
     int has_license_to_kill;
     char stolen_message_content[MAX_LENGTH_OF_MESSAGE];
 
-    id = 0;
-    health_points = 10;
-    location_row = 0;
-    location_column = 0;
-    home_row = 0;
-    home_column = 0;
+    id                     = 0;
+    health_points          = 10;
+    location_row           = 0;
+    location_column        = 0;
+    home_row               = 0;
+    home_column            = 0;
     nb_of_stolen_companies = 0;
-    has_license_to_kill = 0;
+    has_license_to_kill    = 0;
     strcpy(stolen_message_content, "bla bla bla");	
    /* ---------------------------------------------------------------------- */
 
@@ -338,14 +338,14 @@ void display_case_officer_information(WINDOW *window, memory_t *mem, int row, in
     int mailbox_row;
     int mailbox_column;
 
-    id = 0;
-    health_points = 10;
-    location_row = 0;
+    id              = 0;
+    health_points   = 10;
+    location_row    = 0;
     location_column = 0;
-    home_row = 0;
-    home_column = 0;
-    mailbox_row = 0;
-    mailbox_column = 0;
+    home_row        = 0;
+    home_column     = 0;
+    mailbox_row     = 0;
+    mailbox_column  = 0;
    /* ---------------------------------------------------------------------- */
 
     wattron(window, A_BOLD);
@@ -372,14 +372,14 @@ void display_counterintelligence_officer_information(WINDOW *window, memory_t *m
     int mailbox_column;
     int targeted_character_id;
 
-    id = 0;
-    health_points = 10;
-    location_row = 0;
-    location_column = 0;
-    city_hall_row = 0;
-    city_hall_column = 0;
-    mailbox_row = 0;
-    mailbox_column = 0;
+    id                    = 0;
+    health_points         = 10;
+    location_row          = 0;
+    location_column       = 0;
+    city_hall_row         = 0;
+    city_hall_column      = 0;
+    mailbox_row           = 0;
+    mailbox_column        = 0;
     targeted_character_id = 0;
    /* ---------------------------------------------------------------------- */
 	
@@ -432,9 +432,8 @@ void display_mailbox_content(WINDOW *window, memory_t *mem)
     int priority;
     char content[MAX_LENGTH_OF_MESSAGE];
 
-    mailbox_nb_of_msgs;
-    priority;
-    content[MAX_LENGTH_OF_MESSAGE];
+    mailbox_nb_of_msgs = 0;
+    priority           = 0;
    /* ---------------------------------------------------------------------- */
 
     int i;
