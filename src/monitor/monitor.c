@@ -234,7 +234,7 @@ void display_general_information_values(WINDOW *window, memory_t *mem)
     minutes              = 0;
    /* ---------------------------------------------------------------------- */
 
-    mvwprintw(window, 20, 8, "%d", elapsed_time);
+    mvwprintw(window, 20, 8, "%f", elapsed_time);
     mvwprintw(window, 20, 26, "       ");
     mvwprintw(window, 20, 26, "%.2d h %.2d", hour, minutes);
     if (simulation_has_ended > 0) {
