@@ -34,6 +34,7 @@ src/monitor/monitor.o: src/monitor/monitor.c include/monitor.h
 src/monitor/monitor_common.o: src/monitor/monitor_common.c include/monitor_common.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
+
 # ----------------------------------------------------------------------------
 # SPY_SIMULATION
 # ----------------------------------------------------------------------------
@@ -41,8 +42,12 @@ bin/spy_simulation : src/spy_simulation/main.o \
 					 src/spy_simulation/spy_simulation.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
-src/spy_simulation/main.o : src/spy_simulation/spy_simulation.c inlude/spy_simulation.h
+src/spy_simulation/main.o : src/spy_simulation/main.c include/spy_simulation.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
+
+src/spy_simulation/spy_simulation.o : src/spy_simulation/spy_simulation.c include/spy_simulation.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
+
 
 # ----------------------------------------------------------------------------
 # COMMON OBJECTS FILES
