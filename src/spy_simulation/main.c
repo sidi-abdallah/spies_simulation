@@ -4,5 +4,5 @@
 
 int main(int argc, char **argv)
 {
-
+    city * city_simulation = makeCity();
 }
