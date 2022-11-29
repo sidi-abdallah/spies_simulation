@@ -29,6 +29,8 @@ struct city {
 }; 
 
 city * makeCity();
+city * make_conf();
 cell * makeCell(int type);
+void print_city();
 
 #endif //SPY_SIMULATION_H
