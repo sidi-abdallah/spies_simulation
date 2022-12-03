@@ -3,6 +3,13 @@
 
 #define ROUND_NUMBER 2016 
 #define TIME_STEP 200000
+
+struct Processes_Pids {
+     int pid;
+     int a;
+     int pid_spy_simulation ;
+};
+
  
 /**
  * \brief Sets up the timer using the TIME_STEP value.
@@ -19,7 +26,7 @@ void handler(int signum);
 /**
  * \brief Sets up the signal handler.
  */
-int set_signals(void);
+void set_signals(void);
 
 void create_sem_memory_for_test(void);
 
