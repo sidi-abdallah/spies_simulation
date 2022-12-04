@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include "cell.h"
 #include <sys/stat.h>
+#include <math.h>
 
 #define CITY_HALL_X 4
 #define CITY_HALL_Y 4

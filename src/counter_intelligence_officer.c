@@ -99,12 +99,53 @@ int there_is_suspect(){
 }
 
 /**
-*@brief After finding the index of suspect by the "there_is_suspect", this function returns the company targetted
+*@brief After finding the index of suspect by the "there_is_suspect" function, this function returns the company targetted
 */
 position * company_targetted_by_suspect(int suspect_index){
     return company_targetted_memory[suspect_index];
 }
 
+/**
+*@brief Calculate euclid distance between two positions
+*/
+double d_euclid(position * pos1, position * pos2){
+    return sqrt(pos1->x * pos2->x + pos1->y * pos2->y);
+}
 
-/* I need now to implement a function which move the counter intelligence officer to the targetted company */
+/**
+*@brief this function change the cio position
+*@param pos position of the targetted company
+*/
+void move_to(position * pos, counter_officer * cio, city * city){
+    position * pos_tmp, pos_min;
+    int d_min;
+    if(d_euclid(pos, cio->position) == 1 || d_euclid(pos, cio->position) == sqrt(2)){ // if (cio is in the peripherals of the company)
+        return;
+    }
+    for(int i = -1; i <= 1; ++i){
+        for(int j = -1; j <= 1; ++j){
+            if(i == 0 && j == 0){
+                continue;
+            }
+            if(city->grid[i][j] == WASTELAND){
+                pos_tmp->x = i;
+                pos_tmp->y = j;
+                int d_tmp = s_euclid(pos_tmp, pos);
+                if(d_tmp < d_min){
+                    dmin = d_tmp;
+                    pos_min->x = i;
+                    pos_min->y = j;
+                }
+            }
+        }
+    }
+    cio->position = pos_min;
+    move_to(pos, cio, city);
+}
+
+
+
+
+/* I need now to collect the cio position from shm and modify it by the pos_min value, also I need to
+control the speed of the cio (3 cases / round) which requires to link timer program with cio program towards shm */
 
