@@ -24,6 +24,8 @@
 #include "monitor.h"
 #include "memory.h"
 
+#include "spy_simulation.h"
+
 extern WINDOW *main_window;
 extern int old_cursor;
 
@@ -46,15 +48,19 @@ int main(int argc, char **argv)
     int rows;
     int cols;
     int key;
+    memory_t m;
     memory_t *memory;
     monitor_t *monitor;
 
     /* ---------------------------------------------------------------------- */ 
     /* The following code only allows to avoid segmentation fault !           */ 
     /* Change it to access to the real shared memory.                         */
-    memory = (memory_t *)malloc(sizeof(memory_t)); 
-    memory->memory_has_changed =  1;
+    // memory = (memory_t *)malloc(sizeof(memory_t)); 
+    // memory->memory_has_changed =  1;
     /* ---------------------------------------------------------------------- */ 
+
+    //NOT SHARED MEMORY
+    memory = create_memory();
 
     monitor = (monitor_t *)malloc(sizeof(monitor_t));
     monitor->has_to_update = 0;

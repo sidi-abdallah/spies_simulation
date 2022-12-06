@@ -14,7 +14,7 @@ endif
 
 .PHONY: all clean distclean
 
-all: bin/spy_simulation #bin/monitor
+all: bin/spy_simulation bin/monitor
 
 # ----------------------------------------------------------------------------
 # MONITOR
@@ -22,7 +22,8 @@ all: bin/spy_simulation #bin/monitor
 bin/monitor: src/monitor/main.o \
              src/monitor/monitor.o \
              src/monitor/monitor_common.o \
-             src/common/logger.o
+             src/common/logger.o \
+			 src/spy_simulation/spy_simulation.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 src/monitor/main.o: src/monitor/main.c include/monitor.h include/monitor_common.h

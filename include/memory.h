@@ -52,14 +52,16 @@ struct memory_s {
                                 * - 3: the counterintelligence officer did not discover the mailbox. The spy network
                                 *      wins!
                                 */
-    map_t map;                  /*!<Cointains the map of the city. */
-    citizen_t citizens[NUMBER_OF_CITIZENS];
-    residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING];
-    company_t companies[MAX_COMPANIES];
-    mailbox_t mailbox;
-    spie_t spies[NUMBER_OF_SPIES];
+    map_t map;                  /*!<Contains the map of the city. */
     city_hall_t city_hall;
+    company_t companies[MAX_COMPANIES];
+    residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING];
     supermarket_t supermarkets[MAX_SUPERMARKETS];
+    mailbox_t mailbox;
+    
+    
+    // citizen_t citizens[NUMBER_OF_CITIZENS];
+    spie_t spies[NUMBER_OF_SPIES];
     /*
     - map
     - list of companies

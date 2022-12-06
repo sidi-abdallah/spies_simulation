@@ -55,6 +55,15 @@
 
 /*
  * ---------------------------------------------------------------------------
+ * Constants associated with the jobs
+  * ---------------------------------------------------------------------------
+ */
+#define MAX_AFFECTED_CITY_HALL   15  /*!< Maximum number of characters living in a residential building*/
+#define MAX_AFFECTED_SUPERMARKET   15  /*!< Maximum number of characters living in a residential building*/
+
+
+/*
+ * ---------------------------------------------------------------------------
  * Constants associated with the companies
   * ---------------------------------------------------------------------------
  */
@@ -85,7 +94,7 @@
 #define NUMBER_OF_CITIZENS 127 /*!< Number of normal citizens in the simulation*/
 #define NUMBER_OF_SPIES    3   /*!< Number of spies in the simulation*/
 #define MAX_LIFE_POINTS    10  /*!< Maximum number of life points for a character*/
-
+#define MAX_JOBS_TYPES     3   /*!< Maximum number of types of jobs*/
 /*
  * ---------------------------------------------------------------------------
  * Constants associated with the content of messages.

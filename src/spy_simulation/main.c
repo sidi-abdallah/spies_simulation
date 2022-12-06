@@ -7,6 +7,5 @@ int main(int argc, char **argv)
 {
     srand(time(NULL));
 
-    memory_t memory = create_memory();
-    display_map(&memory.map);
+    memory_t * memory = create_memory();
 }

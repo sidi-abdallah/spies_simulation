@@ -87,7 +87,7 @@ void init_monitor_elements(WINDOW *window, memory_t *mem, int rows, int columns)
 {
     /* --------------------------------------------------------------------- */
     /*                 Get information from mem to get the map               */
-	map_t map;
+	map_t map = mem->map;
    /* ---------------------------------------------------------------------- */
 
     set_monitor_title(window, "LICENSE TO KILL (v. 0.2)");
@@ -143,16 +143,12 @@ void set_city_legend(WINDOW *window, int row, int col)
 
 void display_city(WINDOW *window, map_t map, int rows, int columns)
 {
-    /* --------------------------------------------------------------------- */
-    /*                 Get information from map to display city              */
     int map_columns;
     int map_rows;
     int type;
 
-    map_columns = 7;
-    map_rows    = 7;
-    type        = 0;
-   /* ---------------------------------------------------------------------- */
+    map_columns = map.columns;
+    map_rows    = map.rows;
 
     int row_offset;
     int col_offset;
@@ -163,6 +159,7 @@ void display_city(WINDOW *window, map_t map, int rows, int columns)
         for (int j = 0; j < map_rows; j++) {
             row_offset = (rows / 6) + j;
             col_offset = (columns / 5) + (i * 3);
+            type = map.cells[i][j].type;
             switch (type) {
                 case SUPERMARKET:
                     wattron(window, colored_text[COLOR_YELLOW]);
@@ -293,14 +290,14 @@ void display_spy_information(WINDOW *window, memory_t *mem, int row, int column,
     int has_license_to_kill;
     char stolen_message_content[MAX_LENGTH_OF_MESSAGE];
 
-    id                     = 0;
-    health_points          = 10;
-    location_row           = 0;
-    location_column        = 0;
-    home_row               = 0;
-    home_column            = 0;
-    nb_of_stolen_companies = 0;
-    has_license_to_kill    = 0;
+    id                     = mem->spies[number].id;
+    health_points          = mem->spies[number].health_points;
+    location_row           = mem->spies[number].location_row;
+    location_column        = mem->spies[number].location_column;
+    home_row               = mem->spies[number].home_row;
+    home_column            = mem->spies[number].home_column;
+    nb_of_stolen_companies = mem->spies[number].nb_of_stolen_companies;
+    has_license_to_kill    = mem->spies[number].has_license_to_kill;
     strcpy(stolen_message_content, "bla bla bla");	
    /* ---------------------------------------------------------------------- */
 

@@ -2,200 +2,147 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-memory_t create_memory() {
-    memory_t memory;
+memory_t * create_memory() {
+    memory_t * memory = (memory_t *) malloc(sizeof(memory_t));
 
-    create_map(&(memory.map));
-    create_residential_buildings(memory.residential_buildings);
-    create_companies(memory.companies);
-    create_mailbox(&memory.mailbox, memory.residential_buildings);
-    create_spies(memory.spies, &memory.mailbox, memory.residential_buildings);
-    create_citizens(memory.citizens, memory.residential_buildings, memory.companies, &memory.city_hall, memory.supermarkets);
+    create_map(memory);
+    create_mailbox(memory);
+    // create_spies(memory.spies, &memory.mailbox, memory.residential_buildings);
+    // create_citizens(memory.citizens, memory.residential_buildings, memory.companies, &memory.city_hall, memory.supermarkets);
 
     return memory;
 }
 
-void create_map(map_t * map) {
-    map->columns = MAX_COLUMNS;
-    map->rows = MAX_ROWS;
+void create_map(memory_t * memory) {
+    int nb_companies = 0;
+    int nb_residential_buildings = 0;
+    int nb_supermakets = 0;
 
-    create_map_cell(&map->cells[0][0], WASTELAND, 0, 0, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[0][1], COMPANY, 0, 1, MAX_CHARACTERS_COMPANY);
-    create_map_cell(&map->cells[0][2], WASTELAND, 0, 2, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[0][3], COMPANY, 0, 3, MAX_CHARACTERS_COMPANY);
-    create_map_cell(&map->cells[0][4], WASTELAND, 0, 4, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[0][5], WASTELAND, 0, 5, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[0][6], COMPANY, 0, 6, MAX_CHARACTERS_COMPANY);
+    memory->map.columns = MAX_COLUMNS;
+    memory->map.rows = MAX_ROWS;
 
-    create_map_cell(&map->cells[1][0], RESIDENTIAL_BUILDING, 1, 0, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
-    create_map_cell(&map->cells[1][1], WASTELAND, 1, 1, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[1][2], SUPERMARKET, 1, 2, MAX_CHARACTERS_SUPERMARKET);
-    create_map_cell(&map->cells[1][3], WASTELAND, 1, 3, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[1][4], WASTELAND, 1, 4, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[1][5], RESIDENTIAL_BUILDING, 1, 5, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
-    create_map_cell(&map->cells[1][6], WASTELAND, 1, 6, MAX_CHARACTERS_WASTELAND);
+    create_map_cell(memory, WASTELAND, 0, 0, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, COMPANY, 0, 1, MAX_CHARACTERS_COMPANY, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 0, 2, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, COMPANY, 0, 3, MAX_CHARACTERS_COMPANY, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 0, 4, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 0, 5, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, COMPANY, 0, 6, MAX_CHARACTERS_COMPANY, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 1, 0, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 1, 1, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, SUPERMARKET, 1, 2, MAX_CHARACTERS_SUPERMARKET, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 1, 3, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 1, 4, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 1, 5, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 1, 6, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
     
-    create_map_cell(&map->cells[2][0], WASTELAND, 2, 0, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[2][1], RESIDENTIAL_BUILDING, 2, 1, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
-    create_map_cell(&map->cells[2][2], WASTELAND, 2, 2, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[2][3], RESIDENTIAL_BUILDING, 2, 3, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
-    create_map_cell(&map->cells[2][4], WASTELAND, 2, 4, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[2][5], WASTELAND, 2, 5, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[2][6], RESIDENTIAL_BUILDING, 2, 6, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
+    create_map_cell(memory, WASTELAND, 2, 0, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 2, 1, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 2, 2, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 2, 3, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 2, 4, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 2, 5, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 2, 6, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
 
-    create_map_cell(&map->cells[3][0], WASTELAND, 3, 0, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[3][1], WASTELAND, 3, 1, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[3][2], WASTELAND, 3, 2, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[3][3], CITY_HALL, 3, 3, MAX_CHARACTERS_CITY_HALL);
-    create_map_cell(&map->cells[3][4], COMPANY, 3, 4, MAX_CHARACTERS_COMPANY);
-    create_map_cell(&map->cells[3][5], WASTELAND, 3, 5, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[3][6], WASTELAND, 3, 6, MAX_CHARACTERS_WASTELAND);
+    create_map_cell(memory, WASTELAND, 3, 0, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 3, 1, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 3, 2, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, CITY_HALL, 3, 3, MAX_CHARACTERS_CITY_HALL, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, COMPANY, 3, 4, MAX_CHARACTERS_COMPANY, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 3, 5, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 3, 6, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
 
-    create_map_cell(&map->cells[4][0], WASTELAND, 4, 0, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[4][1], RESIDENTIAL_BUILDING, 4, 1, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
-    create_map_cell(&map->cells[4][2], COMPANY, 4, 2, MAX_CHARACTERS_COMPANY);
-    create_map_cell(&map->cells[4][3], SUPERMARKET, 4, 3, MAX_CHARACTERS_SUPERMARKET);
-    create_map_cell(&map->cells[4][4], WASTELAND, 4, 4, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[4][5], WASTELAND, 4, 5, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[4][6], RESIDENTIAL_BUILDING, 4, 6, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
+    create_map_cell(memory, WASTELAND, 4, 0, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 4, 1, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, COMPANY, 4, 2, MAX_CHARACTERS_COMPANY, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, SUPERMARKET, 4, 3, MAX_CHARACTERS_SUPERMARKET, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 4, 4, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 4, 5, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 4, 6, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
 
-    create_map_cell(&map->cells[5][0], WASTELAND, 5, 0, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[5][1], WASTELAND, 5, 1, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[5][2], COMPANY, 5, 2, MAX_CHARACTERS_COMPANY);
-    create_map_cell(&map->cells[5][3], WASTELAND, 5, 3, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[5][4], RESIDENTIAL_BUILDING, 5, 4, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
-    create_map_cell(&map->cells[5][5], WASTELAND, 5, 5, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[5][6], COMPANY, 5, 6, MAX_CHARACTERS_COMPANY);
+    create_map_cell(memory, WASTELAND, 5, 0, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 5, 1, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, COMPANY, 5, 2, MAX_CHARACTERS_COMPANY, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 5, 3, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 5, 4, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 5, 5, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, COMPANY, 5, 6, MAX_CHARACTERS_COMPANY, &nb_companies, &nb_residential_buildings, &nb_supermakets);
 
-    create_map_cell(&map->cells[6][0], RESIDENTIAL_BUILDING, 6, 0, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
-    create_map_cell(&map->cells[6][1], COMPANY, 6, 1, MAX_CHARACTERS_COMPANY);
-    create_map_cell(&map->cells[6][2], WASTELAND, 6, 2, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[6][3], WASTELAND, 6, 3, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[6][4], RESIDENTIAL_BUILDING, 6, 4, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
-    create_map_cell(&map->cells[6][5], WASTELAND, 6, 5, MAX_CHARACTERS_WASTELAND);
-    create_map_cell(&map->cells[6][6], RESIDENTIAL_BUILDING, 6, 6, MAX_CHARACTERS_RESIDENTIAL_BUILDING);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 6, 0, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, COMPANY, 6, 1, MAX_CHARACTERS_COMPANY, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 6, 2, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 6, 3, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 6, 4, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, WASTELAND, 6, 5, MAX_CHARACTERS_WASTELAND, &nb_companies, &nb_residential_buildings, &nb_supermakets);
+    create_map_cell(memory, RESIDENTIAL_BUILDING, 6, 6, MAX_CHARACTERS_RESIDENTIAL_BUILDING, &nb_companies, &nb_residential_buildings, &nb_supermakets);
 }
 
-void create_residential_buildings(residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING]) {
-    residential_buildings[0].row = 1;
-    residential_buildings[0].column = 0;
-    residential_buildings[0].affected_characters = 0;
+void create_map_cell(memory_t * memory, int type, int row, int column, int nb_of_characters, int * nb_companies, int * nb_residential_buildings, int * nb_supermakets) {
+    memory->map.cells[row][column].type = type;
+    memory->map.cells[row][column].row = row;
+    memory->map.cells[row][column].column = column;
+    memory->map.cells[row][column].nb_of_characters = nb_of_characters;
 
-    residential_buildings[1].row = 1;
-    residential_buildings[1].column = 5;
-    residential_buildings[1].affected_characters = 0;
-
-    residential_buildings[2].row = 2;
-    residential_buildings[2].column = 1;
-    residential_buildings[2].affected_characters = 0;
-
-    residential_buildings[3].row = 2;
-    residential_buildings[3].column = 3;
-    residential_buildings[3].affected_characters = 0;
-
-    residential_buildings[4].row = 2;
-    residential_buildings[4].column = 6;
-    residential_buildings[4].affected_characters = 0;
-
-    residential_buildings[5].row = 4;
-    residential_buildings[5].column = 1;
-    residential_buildings[5].affected_characters = 0;
-
-    residential_buildings[6].row = 4;
-    residential_buildings[6].column = 6;
-    residential_buildings[6].affected_characters = 0;
-
-    residential_buildings[7].row = 5;
-    residential_buildings[7].column = 4;
-    residential_buildings[7].affected_characters = 0;
-
-    residential_buildings[8].row = 6;
-    residential_buildings[8].column = 0;
-    residential_buildings[8].affected_characters = 0;
-
-    residential_buildings[9].row = 6;
-    residential_buildings[9].column = 4;
-    residential_buildings[9].affected_characters = 0;
-
-    residential_buildings[10].row = 6;
-    residential_buildings[10].column = 6;
-    residential_buildings[10].affected_characters = 0;
-}
-
-void create_companies(company_t companies[MAX_COMPANIES]) {
-    int i;
-    int company_type;
-
-    companies[0].row = 0;
-    companies[0].column = 1;
-
-    companies[1].row = 0;
-    companies[1].column = 3;
-
-    companies[2].row = 0;
-    companies[2].column = 6;
-
-    companies[3].row = 3;
-    companies[3].column = 4;
-
-    companies[4].row = 4;
-    companies[4].column = 2;
-
-    companies[5].row = 5;
-    companies[5].column = 2;
-
-    companies[6].row = 5;
-    companies[6].column = 6;
-
-    companies[7].row = 6;
-    companies[7].column = 1;
-
-    for(i=0; i<MAX_COMPANIES; i++) {
-        company_type = rand()%MAX_COMPANY_TYPES;
-        companies[i].type = company_type;
+    switch(type) {
+        case RESIDENTIAL_BUILDING :
+            memory->residential_buildings[*nb_residential_buildings].row = row;
+            memory->residential_buildings[*nb_residential_buildings].column = column;
+            memory->residential_buildings[*nb_residential_buildings].affected_characters = 0;
+            *nb_residential_buildings += 1;
+        break;
+        case CITY_HALL :
+            memory->city_hall.row = row;
+            memory->city_hall.column = column;
+            memory->city_hall.affected_characters = 0;
+        break;
+        case COMPANY :
+            memory->companies[*nb_companies].row = row;
+            memory->companies[*nb_companies].column = column;
+            memory->companies[*nb_companies].affected_characters = 0;
+            *nb_companies += 1;
+        break;
+        case SUPERMARKET :
+            memory->supermarkets[*nb_supermakets].row = row;
+            memory->supermarkets[*nb_supermakets].column = column;
+            memory->supermarkets[*nb_supermakets].affected_characters = 0;
+            *nb_supermakets += 1;
+        break;
     }
 }
 
-void display_map(map_t * map) {
-    int i, j;
-    int letter[5] = {'W', 'R', 'H', 'C', 'S'};
-    for(i=0; i<map->rows; i++) {
-        for(j=0; j<map->columns; j++) {
-            printf("%c ", letter[map->cells[i][j].type]);
-        }
-        printf("\n");
-    }
-}
-
-void create_map_cell(cell_t * cell, int type, int row, int column, int nb_of_characters) {
-    cell->type = type;
-    cell->row = row;
-    cell->column = column;
-    cell->nb_of_characters = nb_of_characters;
-}
-
-void create_mailbox(mailbox_t * mailbox, residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING]) {
+void create_mailbox(memory_t * memory) {
     int random_building = rand()%MAX_RESIDENTIAL_BUILDING;
-    mailbox->row = residential_buildings[random_building].row;
-    mailbox->column = residential_buildings[random_building].column;
-    residential_buildings[random_building].affected_characters += 1;
+    memory->mailbox.row = memory->residential_buildings[random_building].row;
+    memory->mailbox.column = memory->residential_buildings[random_building].column;
+    memory->residential_buildings[random_building].affected_characters += 1;
 }
 
 void create_spies(spie_t spies[NUMBER_OF_SPIES], mailbox_t * mailbox, residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING]) {
     int i;
     int spie_affected;
     int random_building;
+    int licence_to_kill_affected = 0;
 
     for(i=0; i<NUMBER_OF_SPIES; i++) {
         spie_affected = 0;
         while(!spie_affected) {
             random_building = rand()%MAX_RESIDENTIAL_BUILDING;
             if(manhattan_distance(residential_buildings[random_building].row, residential_buildings[random_building].column, mailbox->row, mailbox->column) < 4 && residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
-                spies[i].habitation_row = residential_buildings[random_building].row;
-                spies[i].habitation_column = residential_buildings[random_building].column;
-                spies[i].current_row = residential_buildings[random_building].row;
-                spies[i].current_row = residential_buildings[random_building].column;
-                spies[i].life_points = MAX_LIFE_POINTS;
+                if(!licence_to_kill_affected && rand()%2) {
+                    spies[i].has_license_to_kill = 1;
+                    licence_to_kill_affected = 1;
+                }
+                else {
+                    spies[i].has_license_to_kill = 0;
+                }
+                spies[i].id = i;
+                spies[i].health_points = MAX_LIFE_POINTS;
+                spies[i].location_row = residential_buildings[random_building].row;
+                spies[i].location_column = residential_buildings[random_building].column;
+                spies[i].home_row = residential_buildings[random_building].row;
+                spies[i].home_column = residential_buildings[random_building].column;
+                spies[i].nb_of_stolen_companies = 0;
                 residential_buildings[random_building].affected_characters += 1;
                 spie_affected = 1;
             }
@@ -203,14 +150,23 @@ void create_spies(spie_t spies[NUMBER_OF_SPIES], mailbox_t * mailbox, residentia
     }
 }
 
-void create_citizens(citizen_t citizens[NUMBER_OF_CITIZENS], residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING], company_type_t companies[MAX_COMPANIES], city_hall_t * city_hall, supermarket_t supermarkets[MAX_SUPERMARKETS]) {
+void create_spie(memory * memory, int id, int row, int column) {
+    
+}
+
+void create_citizens(citizen_t citizens[NUMBER_OF_CITIZENS], residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING], company_t companies[MAX_COMPANIES], city_hall_t * city_hall, supermarket_t supermarkets[MAX_SUPERMARKETS]) {
     int i;
     int character_habitation_affected;
+    int character_job_affected;
     int random_building;
+    int random_job;
+    int random_supermarket;
+    int random_company;
     
     for(i=0; i<NUMBER_OF_CITIZENS; i++) {
         character_habitation_affected = 0;
-        while(!character_habitation_affected) {
+        character_job_affected = 0;
+        while(!character_habitation_affected && !character_job_affected) {
             if(!character_habitation_affected) {
                 random_building = rand()%MAX_RESIDENTIAL_BUILDING;
                 if(residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
@@ -222,6 +178,34 @@ void create_citizens(citizen_t citizens[NUMBER_OF_CITIZENS], residential_buildin
                     citizens[i].life_points = MAX_LIFE_POINTS;
                     // printf("Citizen n°%d affected to [%d,%d]\n", i, residential_buildings[random_building].row, residential_buildings[random_building].column);
                     character_habitation_affected = 1;
+                }
+            }
+            if(!character_job_affected) {
+                random_job = rand()%MAX_JOBS_TYPES;
+                switch(random_job) {
+                    case SUPERMARKET_JOB :
+                        random_supermarket = rand()%MAX_SUPERMARKETS;
+                        if(supermarkets[random_supermarket].affected_characters < MAX_AFFECTED_SUPERMARKET) {
+                            supermarkets[random_supermarket].affected_characters += 1;
+                            citizens[i].job_row = supermarkets[random_supermarket].row;
+                            citizens[i].job_column = supermarkets[random_supermarket].column;
+                            character_job_affected = 1;
+                        }
+                    break;
+                    case CITY_HALL_JOB :
+                        if(city_hall->affected_characters < MAX_AFFECTED_CITY_HALL) {
+                            city_hall->affected_characters += 1;
+                            citizens[i].job_row = city_hall->row;
+                            citizens[i].job_column = city_hall->column;
+                            character_job_affected = 1;
+                        }
+                    break;
+                    case COMPANY_JOB :
+                        random_company = rand()%MAX_COMPANIES;
+                        citizens[i].job_row = companies[random_company].row;
+                        citizens[i].job_column = companies[random_company].column;
+                        character_job_affected = 1;
+                    break;
                 }
             }
         }
