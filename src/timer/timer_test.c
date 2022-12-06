@@ -19,10 +19,13 @@ int count = 0;
 void handler(int signum) {
     switch (signum) {
         case SIGALRM:
-                printf("moi qui ai un pid = %d j'ai reussi un signal SIGALRM\n", getpid());
+                printf("moi qui ai un pid = %d j'ai reussi un signal SIGALRM n° :%d\n", getpid(), count);
+                count++;
+                break;
         case SIGTERM:
                 printf("moi qui ai un pid = %d j'ai reussi un signal SIGTERM\n", getpid());
-
+                count++;
+                break;
          case SIGINT:
                 exit(0);
         //     quit_nicely(NO_PARTICULAR_REASON);
@@ -34,18 +37,21 @@ void handler(int signum) {
 //Appel handler à l'aide d'une sigaction
 void set_signals() {
     struct sigaction action;
-    action.sa_handler = &handler;
+    action.sa_handler = handler;
     action.sa_flags = 0;
     sigemptyset(&action.sa_mask);
 
     /* Set signal handlers */
-    sigaction(SIGTERM, &action, NULL);
-    sigaction(SIGINT, &action, NULL);
+    // sigaction(SIGTERM, &action, NULL);
+    // sigaction(SIGINT, &action, NULL);
     sigaction(SIGALRM, &action, NULL);
+    //alarm(1);
 
     /*  Ignore SIGTSTP  */
     action.sa_handler = SIG_IGN;
     sigaction(SIGTSTP, &action, NULL);
+    // action.sa_handler = SIG_IGN;
+    // sigaction(SIGTSTP, &action, NULL);
 }
 
 
@@ -76,8 +82,10 @@ int main(void) {
 
     create_sem_memory_for_test();
     set_pids_processes();
-    while(1) {
+    while(count <= ROUND_NUMBER ) {
         set_signals();
+    printf("count = %d\n",count);
+    alarm(1);
     }
     return 0;
 }

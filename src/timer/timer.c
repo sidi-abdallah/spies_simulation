@@ -55,8 +55,10 @@ void sent_sig(void) {
     close(shmd);
     V(sem);
     for(int round = 0; round < ROUND_NUMBER; round++) {
-       if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
-       else kill(pid_spy_simulation, SIGALRM);
+       //if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
+       /*else*/ 
+       kill(pid_spy_simulation, SIGALRM);
+      // alarm(1);
         set_timer();
     }
     kill(pid_spy_simulation, SIGTERM);
