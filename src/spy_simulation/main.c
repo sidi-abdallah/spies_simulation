@@ -1,12 +1,12 @@
-#include "spy_simulation.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "spy_simulation.h"
 
 int main(int argc, char **argv)
 {
     srand(time(NULL));
-    city * city_simulation = makeCity();
-    printf("CITY MADE\n");
-    print_city(city_simulation);
+
+    memory_t memory = create_memory();
+    display_map(&memory.map);
 }

@@ -1,36 +1,22 @@
 #ifndef SPY_SIMULATION_H
 #define SPY_SIMULATION_H
 
-#define CITY_HALL_MAX_CAPACITY 20
-#define COMPANY_MAX_CAPACITY 50
-#define SUPERMAKET_MAX_CAPACITY 30
-#define HABITATION_BUILDING_MAX_CAPACITY 15
-#define EMPTY_MAX_CAPACITY 999
+#include "memory.h"
+#include "common.h"
+#include "cell.h"
+#include "character.h"
 
-#define NB_COMPANY 8
-#define NB_SUPERMAKET 2
-#define NB_HABITATION_BUILDING 11
 
-#define GRID_WIDTH 7
-#define GRID_HEIGHT 7
+memory_t create_memory();
 
-typedef struct cell cell;
-typedef struct city city;
+void create_map(map_t * map);
+void display_map(map_t * map);
+void create_map_cell(cell_t * cell, int type, int row, int column, int nb_of_characters);
+void create_residential_buildings(residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING]);
+void create_companies(company_t companies[MAX_COMPANIES]);
+void create_mailbox(mailbox_t * mailbox, residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING]);
+void create_spies(spie_t spies[NUMBER_OF_SPIES], mailbox_t * mailbox, residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING]);
+void create_citizens(citizen_t citizens[NUMBER_OF_CITIZENS], residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING], company_type_t companies[MAX_COMPANIES], city_hall_t * city_hall, supermarket_t supermarkets[MAX_SUPERMARKETS]);
+int manhattan_distance(int x1, int y1, int x2, int y2);
 
-typedef enum {CITY_HALL, COMPANY, SUPERMARKET, HABITATION_BUILDING, EMPTY}building_type;
-
-struct cell {
-    building_type type;
-    int max_capacity;
-};
-
-struct city {
-    cell * grid[7][7];
-}; 
-
-city * makeCity();
-city * make_conf();
-cell * makeCell(int type);
-void print_city();
-
-#endif //SPY_SIMULATION_H
+#endif /* SPY_SIMULATION_H */

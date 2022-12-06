@@ -14,7 +14,7 @@ endif
 
 .PHONY: all clean distclean
 
-all: bin/monitor bin/spy_simulation
+all: bin/spy_simulation #bin/monitor
 
 # ----------------------------------------------------------------------------
 # MONITOR

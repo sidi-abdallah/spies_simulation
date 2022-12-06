@@ -19,6 +19,7 @@
 #define MEMORY_H
 
 #include "cell.h"
+#include "character.h"
 #include "common.h"
 
 /**
@@ -51,7 +52,23 @@ struct memory_s {
                                 * - 3: the counterintelligence officer did not discover the mailbox. The spy network
                                 *      wins!
                                 */
-    /* TO COMPLETE */
+    map_t map;                  /*!<Cointains the map of the city. */
+    citizen_t citizens[NUMBER_OF_CITIZENS];
+    residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING];
+    company_t companies[MAX_COMPANIES];
+    mailbox_t mailbox;
+    spie_t spies[NUMBER_OF_SPIES];
+    city_hall_t city_hall;
+    supermarket_t supermarkets[MAX_SUPERMARKETS];
+    /*
+    - map
+    - list of companies
+    - list of citizens
+    - mailbox
+    - list of spies
+    - counter officer
+    - case officer
+    */
 };
 
 #endif /* MEMORY_H */

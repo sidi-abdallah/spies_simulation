@@ -41,8 +41,22 @@ enum cell_type_e {
     SUPERMARKET           /*!< A cell that contains a supermarket. */
 };
 
+enum company_type_e {
+    CRUTIAL,
+    STRONG,
+    MEDIUM,
+    LOW,
+    VERY_LOW
+};
+
 typedef enum cell_type_e cell_type_t;
+typedef enum company_type_e company_type_t;
 typedef struct cell_s cell_t;
+typedef struct mailbox_s mailbox_t;
+typedef struct company_s company_t;
+typedef struct supermarket_s supermarket_t;
+typedef struct city_hall_s city_hall_t;
+typedef struct residential_building_s residential_building_t;
 
 /**
  * \brief A cell within the map of the city.
@@ -52,6 +66,43 @@ struct cell_s {
     int row;              /*!< Row of the cell. */
     cell_type_t type;     /*!< Type of the cell (@see \enum e_cell_type). */
     int nb_of_characters; /*!< Max. number of characters on the cell. */
+};
+
+struct residential_building_s {
+    int column;
+    int row;
+    int affected_characters;
+};
+
+struct company_s {
+    int row;
+    int column;
+    company_type_t type;
+    int affected_characters;
+    /**
+     * type
+     * message
+    */
+};
+
+struct city_hall_s {
+    int column;
+    int row;
+    int affected_characters;
+};
+
+struct supermarket_s {
+    int column;
+    int row;
+    int affected_characters;
+};
+
+struct mailbox_s {
+    int row;
+    int column;
+    /**
+     * liste de messages
+    */
 };
 
 #endif /* CELL_H */
