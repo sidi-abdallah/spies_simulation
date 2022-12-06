@@ -29,7 +29,8 @@
 
 typedef struct map_s map_t;
 typedef struct memory_s memory_t;
-
+#define ROUND_NUMBER 2016 
+#define TIME_STEP 200000
 /**
  * \brief The city map.
  */
@@ -37,6 +38,15 @@ struct map_s {
     int columns;                         /*!< The number of columns of the city map. */
     int rows;                            /*!< The number of rows of the city map.*/
     cell_t cells[MAX_COLUMNS][MAX_ROWS]; /*!< Cells that constitute the city map. */
+};
+struct Processes_Pids {
+    //  int pid;
+    //  int a;
+     int pid_spy_simulation;
+     
+    //  int pid_spy_simulation;
+    //  int pid_spy_simulation;
+    //  int pid_spy_simulation;
 };
 
 /**
@@ -52,6 +62,8 @@ struct memory_s {
                                 *      wins!
                                 */
     /* TO COMPLETE */
+    struct Processes_Pids *Processes_Pids;
+    int count;
 };
 
 #endif /* MEMORY_H */

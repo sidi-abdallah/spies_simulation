@@ -4,11 +4,14 @@
 #define ROUND_NUMBER 2016 
 #define TIME_STEP 200000
 
-struct Processes_Pids {
-     int pid;
-     int a;
-     int pid_spy_simulation ;
-};
+// struct Processes_Pids {
+//      int pid;
+//      int a;
+//      int pid_spy_simulation;
+//      // int pid_spy_simulation;
+//      // int pid_spy_simulation;
+//      // int pid_spy_simulation;
+// };
 
  
 /**

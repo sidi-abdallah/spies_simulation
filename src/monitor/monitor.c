@@ -15,12 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*temporaire*/
+#include <stdlib.h>
+#include <stdio.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/types.h>
+//#include "monitor_common.h"
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <sys/stat.h>        /* Pour les constantes des modes */
+#include <fcntl.h>  
+#include <string.h>
+/*end temporaire*/
+
 #include <string.h>
 #include <ncurses.h>
 
 #include "monitor.h"
 #include "monitor_common.h"
 #include "memory.h"
+#include "posix_semaphore.h"
 
 WINDOW *main_window;
 WINDOW *city_window;
@@ -227,13 +245,14 @@ void display_general_information_values(WINDOW *window, memory_t *mem)
     int hour;
     int minutes;
     char *result = NULL;
+    int count = mem->count;
 
-    elapsed_time         = 0;
+    elapsed_time         = TIME_STEP;
     simulation_has_ended = 0;
-    hour                 = 0;
+    hour                 = count;
     minutes              = 0;
    /* ---------------------------------------------------------------------- */
-
+    
     mvwprintw(window, 20, 8, "%f", elapsed_time);
     mvwprintw(window, 20, 26, "       ");
     mvwprintw(window, 20, 26, "%.2d h %.2d", hour, minutes);

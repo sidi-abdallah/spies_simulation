@@ -4,7 +4,9 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <sys/types.h>
-//#include "monitor_common.h"
+#include "monitor_common.h"
+#include "monitor.h"
+#include "memory.h"
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <sys/mman.h>
@@ -17,10 +19,20 @@
 int count = 0;
 
 void handler(int signum) {
+    sem_t *sem; 
+    memory_t *memory = (memory_t *) malloc(sizeof(memory_t));
+    sem = open_semaphore("sem_test-sem");
     switch (signum) {
         case SIGALRM:
-                printf("moi qui ai un pid = %d j'ai reussi un signal SIGALRM n° :%d\n", getpid(), count);
-                count++;
+                //printf("moi qui ai un pid = %d j'ai reussi un signal SIGALRM n° :%d\n", getpid(), count);
+            P(sem);
+            int shmd = shm_open("/share_memory__test",O_RDWR,0666);
+            memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
+            memory->count++;
+            //printf("pid de spy_simulation got : %d \n", processes_Pids->pid_spy_simulation);
+            munmap(processes_Pids, sizeof(struct Processes_Pids));
+            close(shmd);
+            V(sem);
                 break;
         case SIGTERM:
                 printf("moi qui ai un pid = %d j'ai reussi un signal SIGTERM\n", getpid());
@@ -42,7 +54,7 @@ void set_signals() {
     sigemptyset(&action.sa_mask);
 
     /* Set signal handlers */
-    // sigaction(SIGTERM, &action, NULL);
+     sigaction(SIGTERM, &action, NULL);
     // sigaction(SIGINT, &action, NULL);
     sigaction(SIGALRM, &action, NULL);
     //alarm(1);
@@ -82,10 +94,8 @@ int main(void) {
 
     create_sem_memory_for_test();
     set_pids_processes();
-    while(count <= ROUND_NUMBER ) {
+    while(1) {
         set_signals();
-    printf("count = %d\n",count);
-    alarm(1);
     }
     return 0;
 }

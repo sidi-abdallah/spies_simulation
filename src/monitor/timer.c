@@ -1,11 +1,11 @@
-#include "timer.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
 #include <sys/time.h>
 #include <sys/types.h>
-//#include "monitor_common.h"
+#include "monitor_common.h"
 #include <sys/ioctl.h>
+#include <memory.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
@@ -16,14 +16,14 @@
 
 //créer un sémaphore et un mémoire partagé de test
 void get_pids_processes(void) {
-    struct Processes_Pids *processes_Pids = malloc(sizeof(struct Processes_Pids)); 
+    memory_t *memory = malloc(sizeof(memory_t)); 
     sem_t *sem; 
     sem = open_semaphore("sem_test-sem");
             P(sem);
             int shmd = shm_open("/share_memory__test",O_RDWR,0666);
-            processes_Pids = mmap(NULL, sizeof(struct Processes_Pids), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
-            printf("pid de spy_simulation got : %d \n", processes_Pids->pid_spy_simulation);
-            munmap(processes_Pids, sizeof(struct Processes_Pids));
+            memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
+            printf("pid de spy_simulation got : %d \n", memory->pid_spy_simulation);
+            munmap(memory, sizeof(memory_t));
             close(shmd);
             V(sem);
 }
@@ -44,28 +44,28 @@ void set_timer(void) {
 
 void sent_sig(void) {
     pid_t pid_spy_simulation;
-    struct Processes_Pids *processes_Pids = malloc(sizeof(struct Processes_Pids)); 
+    memory_t *memory = malloc(sizeof(memory_t)); 
     sem_t *sem; 
     sem = open_semaphore("sem_test-sem");
     P(sem);
     int shmd = shm_open("/share_memory__test",O_RDWR,0666);
-    processes_Pids = mmap(NULL, sizeof(struct Processes_Pids), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
-    pid_spy_simulation = processes_Pids->pid_spy_simulation;
-    munmap(processes_Pids, sizeof(struct Processes_Pids));
+    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
+    pid_spy_simulation = memory->pid_spy_simulation;
+    munmap(memory, sizeof(memory_t));
     close(shmd);
     V(sem);
-    for(int round = 0; round < ROUND_NUMBER; round++) {
+    for(int round = 0; round < /*ROUND_NUMBER*/100; round++) {
        //if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
        /*else*/ 
        kill(pid_spy_simulation, SIGALRM);
-      // alarm(1);
-        set_timer();
+        usleep(TIME_STEP);
+        //set_timer();
     }
-    kill(pid_spy_simulation, SIGTERM);
+    kill(pid_spy_simulation, SIGKILL);
     //To DO other processus kill
-    // kill(processes_Pids->pid_spy_simulation, SIGALRM);
-    // kill(processes_Pids->pid_spy_simulation, SIGALRM);
-    // kill(processes_Pids->pid_spy_simulation, SIGALRM);
+    // kill(memory->pid_spy_simulation, SIGALRM);
+    // kill(memory->pid_spy_simulation, SIGALRM);
+    // kill(memory->pid_spy_simulation, SIGALRM);
 }
 
 int main(int argc, char * argv[]){
