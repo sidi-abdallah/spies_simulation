@@ -91,10 +91,11 @@
  * Constants associated with the characters
   * ---------------------------------------------------------------------------
  */
-#define NUMBER_OF_CITIZENS 127 /*!< Number of normal citizens in the simulation*/
-#define NUMBER_OF_SPIES    3   /*!< Number of spies in the simulation*/
-#define MAX_LIFE_POINTS    10  /*!< Maximum number of life points for a character*/
-#define MAX_JOBS_TYPES     3   /*!< Maximum number of types of jobs*/
+#define NUMBER_OF_CHARACTERS 132
+#define NUMBER_OF_CITIZENS   127 /*!< Number of normal citizens in the simulation*/
+#define NUMBER_OF_SPIES      3   /*!< Number of spies in the simulation*/
+#define MAX_LIFE_POINTS      10  /*!< Maximum number of life points for a character*/
+#define MAX_JOBS_TYPES       3   /*!< Maximum number of types of jobs*/
 /*
  * ---------------------------------------------------------------------------
  * Constants associated with the content of messages.

@@ -159,7 +159,7 @@ void display_city(WINDOW *window, map_t map, int rows, int columns)
         for (int j = 0; j < map_rows; j++) {
             row_offset = (rows / 6) + j;
             col_offset = (columns / 5) + (i * 3);
-            type = map.cells[i][j].type;
+            type = map.cells[j][i].type;
             switch (type) {
                 case SUPERMARKET:
                     wattron(window, colored_text[COLOR_YELLOW]);
@@ -335,14 +335,14 @@ void display_case_officer_information(WINDOW *window, memory_t *mem, int row, in
     int mailbox_row;
     int mailbox_column;
 
-    id              = 0;
-    health_points   = 10;
-    location_row    = 0;
-    location_column = 0;
-    home_row        = 0;
-    home_column     = 0;
-    mailbox_row     = 0;
-    mailbox_column  = 0;
+    id              = mem->case_officer.id;
+    health_points   = mem->case_officer.health_points;
+    location_row    = mem->case_officer.location_row;
+    location_column = mem->case_officer.location_column;
+    home_row        = mem->case_officer.home_row;
+    home_column     = mem->case_officer.home_column;
+    mailbox_row     = mem->mailbox.row;
+    mailbox_column  = mem->mailbox.column;
    /* ---------------------------------------------------------------------- */
 
     wattron(window, A_BOLD);
@@ -369,14 +369,14 @@ void display_counterintelligence_officer_information(WINDOW *window, memory_t *m
     int mailbox_column;
     int targeted_character_id;
 
-    id                    = 0;
-    health_points         = 10;
-    location_row          = 0;
-    location_column       = 0;
-    city_hall_row         = 0;
-    city_hall_column      = 0;
-    mailbox_row           = 0;
-    mailbox_column        = 0;
+    id                    = mem->counter_officer.id;
+    health_points         = mem->counter_officer.health_points;
+    location_row          = mem->counter_officer.location_row;
+    location_column       = mem->counter_officer.location_column;
+    city_hall_row         = mem->city_hall.row;
+    city_hall_column      = mem->city_hall.column;
+    mailbox_row           = mem->mailbox.row;
+    mailbox_column        = mem->mailbox.column;
     targeted_character_id = 0;
    /* ---------------------------------------------------------------------- */
 	

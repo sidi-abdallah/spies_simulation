@@ -59,9 +59,11 @@ struct memory_s {
     supermarket_t supermarkets[MAX_SUPERMARKETS];
     mailbox_t mailbox;
     
-    
-    // citizen_t citizens[NUMBER_OF_CITIZENS];
+    citizen_t citizens[NUMBER_OF_CITIZENS];
     spie_t spies[NUMBER_OF_SPIES];
+    counter_officer_t counter_officer;
+    case_officer_t case_officer;
+
     /*
     - map
     - list of companies

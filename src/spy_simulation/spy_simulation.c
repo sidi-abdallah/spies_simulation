@@ -7,9 +7,8 @@ memory_t * create_memory() {
 
     create_map(memory);
     create_mailbox(memory);
-    // create_spies(memory.spies, &memory.mailbox, memory.residential_buildings);
-    // create_citizens(memory.citizens, memory.residential_buildings, memory.companies, &memory.city_hall, memory.supermarkets);
-
+    create_characters(memory);
+    
     return memory;
 }
 
@@ -118,97 +117,90 @@ void create_mailbox(memory_t * memory) {
     memory->residential_buildings[random_building].affected_characters += 1;
 }
 
-void create_spies(spie_t spies[NUMBER_OF_SPIES], mailbox_t * mailbox, residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING]) {
+void create_characters(memory_t * memory) {
+    int nb_citizens = 0;
+    int nb_spies = 0;
     int i;
-    int spie_affected;
+    int character_created;
     int random_building;
-    int licence_to_kill_affected = 0;
 
     for(i=0; i<NUMBER_OF_SPIES; i++) {
-        spie_affected = 0;
-        while(!spie_affected) {
+        character_created = 0;
+        while(!character_created) {
             random_building = rand()%MAX_RESIDENTIAL_BUILDING;
-            if(manhattan_distance(residential_buildings[random_building].row, residential_buildings[random_building].column, mailbox->row, mailbox->column) < 4 && residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
-                if(!licence_to_kill_affected && rand()%2) {
-                    spies[i].has_license_to_kill = 1;
-                    licence_to_kill_affected = 1;
-                }
-                else {
-                    spies[i].has_license_to_kill = 0;
-                }
-                spies[i].id = i;
-                spies[i].health_points = MAX_LIFE_POINTS;
-                spies[i].location_row = residential_buildings[random_building].row;
-                spies[i].location_column = residential_buildings[random_building].column;
-                spies[i].home_row = residential_buildings[random_building].row;
-                spies[i].home_column = residential_buildings[random_building].column;
-                spies[i].nb_of_stolen_companies = 0;
-                residential_buildings[random_building].affected_characters += 1;
-                spie_affected = 1;
+            if(manhattan_distance(memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, memory->mailbox.row, memory->mailbox.column) < 4 && memory->residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
+                create_character(memory, i, SPY, memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, 0, 0, 0, NULL, &nb_spies);
+                memory->residential_buildings[random_building].affected_characters += 1;
+                character_created = 1;
+            }
+        }
+    }
+
+    character_created = 0;
+    while(!character_created) {
+        random_building = rand()%MAX_RESIDENTIAL_BUILDING;
+        if(manhattan_distance(memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, memory->mailbox.row, memory->mailbox.column) < 4 && memory->residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
+            create_character(memory, NUMBER_OF_SPIES+1, CASE_OFFICER, memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, 0, 0, 0, NULL, &nb_spies);
+            memory->residential_buildings[random_building].affected_characters += 1;
+            character_created = 1;
+        }
+    }
+
+    create_character(memory, NUMBER_OF_SPIES+1, COUNTER_OFFICER, 0, 0, memory->city_hall.row, memory->city_hall.column, 0, NULL, NULL);
+    
+    for(i=NUMBER_OF_SPIES+2; i<NUMBER_OF_SPIES+2+NUMBER_OF_CITIZENS; i++) {
+        character_created = 0;
+        while(!character_created) {
+            random_building = rand()%MAX_RESIDENTIAL_BUILDING;
+            if(memory->residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
+                create_character(memory, i, CITIZEN, memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, 0, 0, 0, &nb_citizens, NULL);
+                memory->residential_buildings[random_building].affected_characters += 1;
+                character_created = 1;
             }
         }
     }
 }
 
-void create_spie(memory * memory, int id, int row, int column) {
-    
-}
-
-void create_citizens(citizen_t citizens[NUMBER_OF_CITIZENS], residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING], company_t companies[MAX_COMPANIES], city_hall_t * city_hall, supermarket_t supermarkets[MAX_SUPERMARKETS]) {
-    int i;
-    int character_habitation_affected;
-    int character_job_affected;
-    int random_building;
-    int random_job;
-    int random_supermarket;
-    int random_company;
-    
-    for(i=0; i<NUMBER_OF_CITIZENS; i++) {
-        character_habitation_affected = 0;
-        character_job_affected = 0;
-        while(!character_habitation_affected && !character_job_affected) {
-            if(!character_habitation_affected) {
-                random_building = rand()%MAX_RESIDENTIAL_BUILDING;
-                if(residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
-                    residential_buildings[random_building].affected_characters += 1;
-                    citizens[i].habitation_row = residential_buildings[random_building].row;
-                    citizens[i].habitation_column = residential_buildings[random_building].column;
-                    citizens[i].current_row = residential_buildings[random_building].row;
-                    citizens[i].current_column = residential_buildings[random_building].column;
-                    citizens[i].life_points = MAX_LIFE_POINTS;
-                    // printf("Citizen n°%d affected to [%d,%d]\n", i, residential_buildings[random_building].row, residential_buildings[random_building].column);
-                    character_habitation_affected = 1;
-                }
-            }
-            if(!character_job_affected) {
-                random_job = rand()%MAX_JOBS_TYPES;
-                switch(random_job) {
-                    case SUPERMARKET_JOB :
-                        random_supermarket = rand()%MAX_SUPERMARKETS;
-                        if(supermarkets[random_supermarket].affected_characters < MAX_AFFECTED_SUPERMARKET) {
-                            supermarkets[random_supermarket].affected_characters += 1;
-                            citizens[i].job_row = supermarkets[random_supermarket].row;
-                            citizens[i].job_column = supermarkets[random_supermarket].column;
-                            character_job_affected = 1;
-                        }
-                    break;
-                    case CITY_HALL_JOB :
-                        if(city_hall->affected_characters < MAX_AFFECTED_CITY_HALL) {
-                            city_hall->affected_characters += 1;
-                            citizens[i].job_row = city_hall->row;
-                            citizens[i].job_column = city_hall->column;
-                            character_job_affected = 1;
-                        }
-                    break;
-                    case COMPANY_JOB :
-                        random_company = rand()%MAX_COMPANIES;
-                        citizens[i].job_row = companies[random_company].row;
-                        citizens[i].job_column = companies[random_company].column;
-                        character_job_affected = 1;
-                    break;
-                }
-            }
-        }
+void create_character(memory_t * memory, int id, character_type_t type, int home_row, int home_column, int work_row, int work_column, work_type_t work, int * nb_citizens, int * nb_spies) {
+    switch (type)
+    {
+    case CITIZEN :
+        memory->citizens[*nb_citizens].id = id;
+        memory->citizens[*nb_citizens].location_row = home_row;
+        memory->citizens[*nb_citizens].location_column = home_column;
+        memory->citizens[*nb_citizens].home_row = home_row;
+        memory->citizens[*nb_citizens].home_column = home_column;
+        memory->citizens[*nb_citizens].work_row = work_row;
+        memory->citizens[*nb_citizens].work_column = work_column;
+        memory->citizens[*nb_citizens].work = work;
+        memory->citizens[*nb_citizens].health_points = MAX_LIFE_POINTS;
+        *nb_citizens += 1;
+        break;
+    case SPY:
+        memory->spies[*nb_spies].id = id;
+        memory->spies[*nb_spies].location_row = home_row;
+        memory->spies[*nb_spies].location_column = home_column;
+        memory->spies[*nb_spies].home_row = home_row;
+        memory->spies[*nb_spies].home_column = home_column;
+        memory->spies[*nb_spies].health_points = MAX_LIFE_POINTS;
+        memory->spies[*nb_spies].nb_of_stolen_companies = 0;
+        memory->spies[*nb_spies].has_license_to_kill = *nb_spies == 0 ? 1 : 0;
+        *nb_spies += 1;
+        break;
+    case CASE_OFFICER:
+        memory->case_officer.id = id;
+        memory->case_officer.location_row = home_row;
+        memory->case_officer.location_column = home_column;
+        memory->case_officer.home_row = home_row;
+        memory->case_officer.home_column = home_column;
+        memory->case_officer.health_points = MAX_LIFE_POINTS;
+        break;
+    case COUNTER_OFFICER:
+        memory->counter_officer.id = id;
+        memory->counter_officer.location_row = work_row;
+        memory->counter_officer.location_column = work_column;
+        memory->counter_officer.health_points = MAX_LIFE_POINTS;
+        break;
     }
 }
 

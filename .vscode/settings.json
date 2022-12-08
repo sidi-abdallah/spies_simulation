@@ -13,6 +13,11 @@
         "ratio": "c",
         "tuple": "c",
         "variant": "c",
-        "common.h": "c"
+        "common.h": "c",
+        "monitor.h": "c",
+        "monitor_common.h": "c",
+        "memory.h": "c",
+        "ncurses.h": "c",
+        "mman.h": "c"
     }
 }

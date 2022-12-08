@@ -23,7 +23,7 @@ bin/monitor: src/monitor/main.o \
              src/monitor/monitor.o \
              src/monitor/monitor_common.o \
              src/common/logger.o \
-			 src/spy_simulation/spy_simulation.o
+			 src/common/posix_semaphore.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 src/monitor/main.o: src/monitor/main.c include/monitor.h include/monitor_common.h
@@ -57,6 +57,8 @@ src/spy_simulation/spy_simulation.o : src/spy_simulation/spy_simulation.c includ
 src/common/logger.o: src/common/logger.c include/logger.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
+src/common/posix_semaphore.o : src/common/posix_semaphore.c include/posix_semaphore.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
 # ----------------------------------------------------------------------------
 # CLEANING

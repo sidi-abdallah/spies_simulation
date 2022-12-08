@@ -19,12 +19,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
+#include <sys/mman.h> 
+#include <sys/stat.h>
 
 #include "monitor_common.h"
 #include "monitor.h"
 #include "memory.h"
-
-#include "spy_simulation.h"
+#include "posix_semaphore.h"
 
 extern WINDOW *main_window;
 extern int old_cursor;
@@ -48,7 +49,6 @@ int main(int argc, char **argv)
     int rows;
     int cols;
     int key;
-    memory_t m;
     memory_t *memory;
     monitor_t *monitor;
 
@@ -59,8 +59,15 @@ int main(int argc, char **argv)
     // memory->memory_has_changed =  1;
     /* ---------------------------------------------------------------------- */ 
 
-    //NOT SHARED MEMORY
-    memory = create_memory();
+    int shmd = shm_open("/spy_simulation", O_RDWR, (mode_t)0600);
+    if(shmd == -1) {
+        perror("shmd failed");
+    }
+    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd,0);
+    if (memory == MAP_FAILED) {
+        perror("mmap failed");
+        return -1;
+    }
 
     monitor = (monitor_t *)malloc(sizeof(monitor_t));
     monitor->has_to_update = 0;
@@ -96,6 +103,8 @@ int main(int argc, char **argv)
             case 'Q':
             case 'q':
             case 27:
+                munmap(memory, sizeof(memory_t));
+                close(shmd);
                 quit_nicely(NO_PARTICULAR_REASON);
             default:
                 break;

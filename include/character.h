@@ -5,18 +5,19 @@
 
 enum character_type_e {
     CITIZEN,
-    SPIE,
+    SPY,
     COUNTER_OFFICER,
     CASE_OFFICER
 };
 
-enum job_type_e {
-    SUPERMARKET_JOB,
-    CITY_HALL_JOB,
-    COMPANY_JOB
+enum work_type_e {
+    SUPERMARKET_WORK,
+    CITY_HALL_WORK,
+    COMPANY_WORK
 };
 
-typedef enum job_type_e job_type_t;
+typedef enum character_type_e character_type_t;
+typedef enum work_type_e work_type_t;
 typedef struct character_s character_t;
 typedef struct citizen_s citizen_t;
 typedef struct spie_s spie_t;
@@ -33,14 +34,15 @@ struct character_s {
  * \brief A citizen 
 */
 struct citizen_s {
-    int current_row;
-    int current_column;
-    int habitation_row;
-    int habitation_column;
-    int job_row;
-    int job_column;
-    int life_points;
-    job_type_t job;
+    int id;
+    int health_points;
+    int location_row;
+    int location_column;
+    int home_row;
+    int home_column;
+    int work_row;
+    int work_column;
+    work_type_t work;
 };
 
 struct spie_s {
@@ -62,16 +64,13 @@ struct case_officer_s {
     int location_column;
     int home_row;
     int home_column;
-    int mailbox_row;
-    int mailbox_column;
 };
 
 struct counter_officer_s {
-    int current_row;
-    int current_column;
-    int habitation_row;
-    int habitation_column;
-    int life_points;
+    int id;
+    int health_points;
+    int location_row;
+    int location_column;
 };
 
 #endif /* CHARACTER_H */
