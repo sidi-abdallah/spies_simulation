@@ -21,6 +21,8 @@
 #include "cell.h"
 #include "character.h"
 #include "common.h"
+#include <sys/types.h> 
+#include <unistd.h>
 
 /**
  * \file memory.h
@@ -64,6 +66,7 @@ struct memory_s {
     counter_officer_t counter_officer;
     case_officer_t case_officer;
 
+    pid_t spy_simulation_pid;
     /*
     - map
     - list of companies

@@ -18,6 +18,8 @@
         "monitor_common.h": "c",
         "memory.h": "c",
         "ncurses.h": "c",
-        "mman.h": "c"
+        "mman.h": "c",
+        "types.h": "c",
+        "cell.h": "c"
     }
 }

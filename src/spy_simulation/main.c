@@ -30,9 +30,11 @@ int main(int argc, char **argv)
     create_mailbox(memory);
     create_characters(memory);
 
-    printf("Tap somethin to exit");
-    scanf("%d");
+    set_signal_handler();
+    while(1) {
 
+    }
+    
     munmap(memory, sizeof(memory_t));
     close(shmd);
     shm_unlink("/spy_simulation");

@@ -1,6 +1,9 @@
 #include "spy_simulation.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h> 
+#include <signal.h>
+#include <unistd.h>
 
 memory_t * create_memory() {
     memory_t * memory = (memory_t *) malloc(sizeof(memory_t));
@@ -8,6 +11,7 @@ memory_t * create_memory() {
     create_map(memory);
     create_mailbox(memory);
     create_characters(memory);
+    memory->spy_simulation_pid = getpid();
     
     return memory;
 }
@@ -206,4 +210,27 @@ void create_character(memory_t * memory, int id, character_type_t type, int home
 
 int manhattan_distance(int x1, int y1, int x2, int y2) {
     return abs(x2 - x1) + abs(y2 - y1);
+}
+
+void set_signal_handler() {
+    struct sigaction action;
+    action.sa_handler = signal_handler;
+    action.sa_flags = 0;
+    sigemptyset(&action.sa_mask);
+}
+
+void signal_handler(int signum) {
+    switch (signum) {
+        case SIGALRM:
+            printf("signal SIGALRM\n");
+            break;
+        case SIGTERM:
+            printf("signal SIGTERM\n");
+            break;
+         case SIGINT:
+            printf("signal SIGINT\n");
+            exit(0);
+        default:
+            break;
+    }
 }
