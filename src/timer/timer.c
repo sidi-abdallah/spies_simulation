@@ -14,6 +14,7 @@
 #include <string.h>
 #include "posix_semaphore.h"
 #include "memory.h"
+#include "common.h"
 
 //créer un sémaphore et un mémoire partagé de test
 void get_pids_processes(void) {
@@ -52,16 +53,14 @@ void sent_sig(void) {
     int shmd = shm_open("/spy_simulation",O_RDWR,0666);
     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
     pid_spy_simulation = memory->spy_simulation_pid;
-    printf("%d\n", pid_spy_simulation);
-    printf("%d\n", memory->city_hall.column);
     munmap(memory, sizeof(memory_t));
     close(shmd);
     V(sem);
-    for(int round = 0; round < /*ROUND_NUMBER*/100; round++) {
+    for(int round = 0; round < ROUND_NUMBER; round++) {
        //if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
        /*else*/ 
        kill(pid_spy_simulation, SIGALRM);
-        usleep(TIME_STEP);
+        usleep(DEFAULT_SPAN_ROUND);
         //set_timer();
     }
     kill(pid_spy_simulation, SIGKILL);

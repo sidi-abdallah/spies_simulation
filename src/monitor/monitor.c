@@ -34,6 +34,7 @@
 
 #include <string.h>
 #include <ncurses.h>
+#include <math.h>
 
 #include "monitor.h"
 #include "monitor_common.h"
@@ -244,10 +245,10 @@ void display_general_information_values(WINDOW *window, memory_t *mem)
     char *result = NULL;
     int count = mem->count;
 
-    elapsed_time         = TIME_STEP;
-    simulation_has_ended = 0;
-    hour                 = count;
-    minutes              = 0;
+    elapsed_time         = count;
+    simulation_has_ended = mem->simulation_has_ended;
+    hour                 = ((int) floor((count/6)))%24;
+    minutes              = (count * 10)%60;
    /* ---------------------------------------------------------------------- */
     
     mvwprintw(window, 20, 8, "%f", elapsed_time);
