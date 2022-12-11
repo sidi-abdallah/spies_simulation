@@ -13,6 +13,7 @@
 #include <fcntl.h>  
 #include <string.h>
 #include "posix_semaphore.h"
+#include "memory.h"
 
 //créer un sémaphore et un mémoire partagé de test
 void get_pids_processes(void) {
@@ -22,7 +23,7 @@ void get_pids_processes(void) {
             P(sem);
             int shmd = shm_open("/share_memory__test",O_RDWR,0666);
             memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
-            printf("pid de spy_simulation got : %d \n", memory->pid_spy_simulation);
+            printf("pid de spy_simulation got : %d \n", memory->spy_simulation_pid);
             munmap(memory, sizeof(memory_t));
             close(shmd);
             V(sem);
@@ -46,11 +47,13 @@ void sent_sig(void) {
     pid_t pid_spy_simulation;
     memory_t *memory = malloc(sizeof(memory_t)); 
     sem_t *sem; 
-    sem = open_semaphore("sem_test-sem");
+    sem = open_semaphore("spy_simulation-sem");
     P(sem);
-    int shmd = shm_open("/share_memory__test",O_RDWR,0666);
+    int shmd = shm_open("/spy_simulation",O_RDWR,0666);
     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
-    pid_spy_simulation = memory->pid_spy_simulation;
+    pid_spy_simulation = memory->spy_simulation_pid;
+    printf("%d\n", pid_spy_simulation);
+    printf("%d\n", memory->city_hall.column);
     munmap(memory, sizeof(memory_t));
     close(shmd);
     V(sem);
@@ -66,11 +69,4 @@ void sent_sig(void) {
     // kill(memory->pid_spy_simulation, SIGALRM);
     // kill(memory->pid_spy_simulation, SIGALRM);
     // kill(memory->pid_spy_simulation, SIGALRM);
-}
-
-int main(int argc, char * argv[]){
-    int status;
-    get_pids_processes();
-    sent_sig();
-    return 0;
 }

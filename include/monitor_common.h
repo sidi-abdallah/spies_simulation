@@ -18,6 +18,8 @@
 #ifndef MONITOR_COMMON_H
 #define MONITOR_COMMON_H
 
+#include <curses.h>
+
 /**
  * \file monitor_common.h
  *

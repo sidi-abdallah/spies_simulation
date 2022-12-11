@@ -14,7 +14,7 @@ endif
 
 .PHONY: all clean distclean
 
-all: bin/spy_simulation bin/monitor
+all: bin/spy_simulation bin/timer bin/monitor
 
 # ----------------------------------------------------------------------------
 # MONITOR
@@ -40,7 +40,8 @@ src/monitor/monitor_common.o: src/monitor/monitor_common.c include/monitor_commo
 # SPY_SIMULATION
 # ----------------------------------------------------------------------------
 bin/spy_simulation : src/spy_simulation/main.o \
-					 src/spy_simulation/spy_simulation.o
+					 src/spy_simulation/spy_simulation.o \
+					 src/common/posix_semaphore.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 src/spy_simulation/main.o : src/spy_simulation/main.c include/spy_simulation.h
@@ -49,6 +50,19 @@ src/spy_simulation/main.o : src/spy_simulation/main.c include/spy_simulation.h
 src/spy_simulation/spy_simulation.o : src/spy_simulation/spy_simulation.c include/spy_simulation.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
+# ----------------------------------------------------------------------------
+# TIMER
+# ----------------------------------------------------------------------------
+bin/timer : src/timer/main.o \
+			src/timer/timer.o \
+			src/common/posix_semaphore.o
+	$(CC) $^ -o $@ $(LDFLAGS)
+
+src/timer/main.o : src/timer/main.c include/timer.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
+
+src/timer/timer.o : src/timer/timer.c include/timer.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
 # ----------------------------------------------------------------------------
 # COMMON OBJECTS FILES

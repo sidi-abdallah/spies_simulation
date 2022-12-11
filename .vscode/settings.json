@@ -20,6 +20,11 @@
         "ncurses.h": "c",
         "mman.h": "c",
         "types.h": "c",
-        "cell.h": "c"
+        "cell.h": "c",
+        "curses.h": "c",
+        "ioctl.h": "c",
+        "time.h": "c",
+        "fcntl.h": "c",
+        "unistd.h": "c"
     }
 }

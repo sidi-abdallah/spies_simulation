@@ -4,6 +4,10 @@
 #include <sys/types.h> 
 #include <signal.h>
 #include <unistd.h>
+#include <semaphore.h>
+#include <sys/mman.h> 
+#include <sys/stat.h>
+#include "posix_semaphore.h"
 
 memory_t * create_memory() {
     memory_t * memory = (memory_t *) malloc(sizeof(memory_t));
@@ -12,7 +16,7 @@ memory_t * create_memory() {
     create_mailbox(memory);
     create_characters(memory);
     memory->spy_simulation_pid = getpid();
-    
+    printf("%d\n", memory->spy_simulation_pid);
     return memory;
 }
 
@@ -217,11 +221,19 @@ void set_signal_handler() {
     action.sa_handler = signal_handler;
     action.sa_flags = 0;
     sigemptyset(&action.sa_mask);
+
+    sigaction(SIGTERM, &action, NULL);
+
+    sigaction(SIGALRM, &action, NULL);
+
+    action.sa_handler = SIG_IGN;
+    sigaction(SIGTSTP, &action, NULL);
 }
 
 void signal_handler(int signum) {
     switch (signum) {
         case SIGALRM:
+            new_round();
             printf("signal SIGALRM\n");
             break;
         case SIGTERM:
@@ -233,4 +245,30 @@ void signal_handler(int signum) {
         default:
             break;
     }
+}
+
+void new_round() {
+    memory_t * memory;
+    sem_t *sem;
+    sem = create_and_open_semaphore("spy_simulation-sem");
+    P(sem);
+    int shmd = shm_open("/spy_simulation", O_CREAT | O_RDWR, (mode_t)0600);
+    if(shmd == -1) {
+        perror("shmd failed");
+    }
+    if(ftruncate(shmd, sizeof(memory_t)) == -1) {
+        perror("shmd truncate failed");
+    }
+    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd,0);
+    if (memory == MAP_FAILED) {
+        perror("mmap failed");
+        return -1;
+    }
+
+    memory->count += 1;
+    memory->memory_has_changed = 1;
+
+    munmap(memory, sizeof(memory_t));
+    close(shmd);
+    V(sem);
 }

@@ -67,6 +67,7 @@ struct memory_s {
     case_officer_t case_officer;
 
     pid_t spy_simulation_pid;
+    int count;
     /*
     - map
     - list of companies
