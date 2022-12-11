@@ -15,6 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*temporaire*/
+#include <stdlib.h>
+#include <stdio.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/types.h>
+//#include "monitor_common.h"
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <sys/stat.h>        /* Pour les constantes des modes */
+#include <fcntl.h>  
+#include <string.h>
+/*end temporaire*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,7 +67,8 @@ int main(int argc, char **argv)
     int key;
     memory_t *memory;
     monitor_t *monitor;
-
+    sem_t *sem; 
+    
     /* ---------------------------------------------------------------------- */ 
     /* The following code only allows to avoid segmentation fault !           */ 
     /* Change it to access to the real shared memory.                         */
@@ -109,12 +126,17 @@ int main(int argc, char **argv)
             default:
                 break;
         }
-
+    sem = open_semaphore("sem_test-sem");
+    P(sem);
+    int shmd = shm_open("/share_memory__test",O_RDWR,0666);
+    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
         if (memory->memory_has_changed) {
             update_values(memory);
             memory->memory_has_changed = 0;
         }
-
+    munmap(memory, sizeof(memory_t));
+    close(shmd);
+    V(sem);
     }
 
 }
