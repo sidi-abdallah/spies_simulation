@@ -236,6 +236,16 @@ void show_general_information(WINDOW *window)
     wrefresh(window);
 }
 
+int * time_format(int count) {
+    int *time = malloc(sizeof(int)*2);
+    int hour = 0, min = 0;
+    hour = (count / 6)%24;
+    min = 10 * (count % 6);
+    time[0] = hour;
+    time[1] = min;
+    return time;
+}
+
 void display_general_information_values(WINDOW *window, memory_t *mem)
 {
     /* --------------------------------------------------------------------- */
@@ -245,12 +255,13 @@ void display_general_information_values(WINDOW *window, memory_t *mem)
     int hour;
     int minutes;
     char *result = NULL;
-    int count = mem->count;
-
+    //int count = mem->count;
+    int *time  = malloc(sizeof(int)*2);
+    time = time_format(mem->count);
     elapsed_time         = TIME_STEP;
     simulation_has_ended = 0;
-    hour                 = count;
-    minutes              = 0;
+    hour                 = time[0];
+    minutes              = time[1];
    /* ---------------------------------------------------------------------- */
     
     mvwprintw(window, 20, 8, "%f", elapsed_time);

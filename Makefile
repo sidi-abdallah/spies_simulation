@@ -2,10 +2,10 @@ CC=gcc
 CFLAGS=-Wall -Wextra -pedantic -O2 -g
 CC = gcc
 CFLAGS =  -lrt -lpthread
-OBJSIEVE1  = timer.o posix_semaphore.o
-OBJSIEVE2  = timer_test.o posix_semaphore.o
-EXEC1 = timer
-EXEC2 = timer_test
+OBJSIEVE_TIMER  = src/timer/timer.o src/common/posix_semaphore.o
+OBJSIEVE_TIMER_TEST  = src/timer/timer_test.o src/common/posix_semaphore.o
+TIMER = timer
+TIMER_TEST = timer_test
 SRC = src
 INC = ../../include
 
@@ -28,7 +28,7 @@ endif
 
 .PHONY: all clean distclean
 
-all: bin/monitor $(EXEC1) $(EXEC2)
+all: bin/monitor $(TIMER) $(TIMER_TEST)
 
 # ----------------------------------------------------------------------------
 # MONITOR
@@ -37,7 +37,7 @@ bin/monitor: src/monitor/main.o \
              src/monitor/monitor.o \
              src/monitor/monitor_common.o \
              src/common/logger.o \
-			 posix_semaphore.o
+			 src/common/posix_semaphore.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 src/monitor/main.o: src/monitor/main.c include/monitor.h include/monitor_common.h include/posix_semaphore.h
@@ -60,20 +60,20 @@ src/common/logger.o: src/common/logger.c include/logger.h
 # ----------------------------------------------------------------------------
 # TIMER FILES
 # ----------------------------------------------------------------------------
-$(EXEC1) : $(OBJSIEVE1)
+$(TIMER) : $(OBJSIEVE_TIMER)
 	$(CC) $^ -o $@ $(CFLAGS) -lm
 
-$(EXEC2) : $(OBJSIEVE2)
+$(TIMER_TEST) : $(OBJSIEVE_TIMER_TEST)
 	$(CC) $^ -o $@ $(CFLAGS) -lm
 
-timer.o : src/monitor/timer.c  include/memory.h
-	$(CC) -c $< $(CFLAGS) -I./include
+src/timer/timer.o : src/timer/timer.c  include/memory.h
+	$(CC) -I./include -lrt -lpthread $< -o $@ -c
 
-timer_test.o : src/monitor/timer_test.c  include/memory.h
-	$(CC) -c $< $(CFLAGS) -I./include
+src/timer/timer_test.o : src/timer/timer_test.c  include/memory.h
+	$(CC) -I./include -lrt -lpthread $< -o $@ -c
 
-posix_semaphore.o : src/monitor/posix_semaphore.c  include/posix_semaphore.h
-	$(CC) -c $< $(CFLAGS) -I./include
+src/common/posix_semaphore.o : src/common/posix_semaphore.c  include/posix_semaphore.h
+	$(CC) -I./include -lrt -lpthread $< -o $@ -c
 
 
 
@@ -81,7 +81,7 @@ posix_semaphore.o : src/monitor/posix_semaphore.c  include/posix_semaphore.h
 # CLEANING
 # ----------------------------------------------------------------------------
 clean:
-	rm src/monitor/*.o src/common/*.o
+	rm src/monitor/*.o src/common/*.o src/timer/*.o
 
 distclean: clean
 	rm bin/monitor

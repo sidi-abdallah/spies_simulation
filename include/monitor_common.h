@@ -17,7 +17,7 @@
  */
 #ifndef MONITOR_COMMON_H
 #define MONITOR_COMMON_H
-
+#include <ncurses.h>
 /**
  * \file monitor_common.h
  *

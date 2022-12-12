@@ -21,16 +21,15 @@ int count = 0;
 void handler(int signum) {
     sem_t *sem; 
     memory_t *memory = (memory_t *) malloc(sizeof(memory_t));
-    sem = open_semaphore("sem_test-sem");
     switch (signum) {
         case SIGALRM:
-                //printf("moi qui ai un pid = %d j'ai reussi un signal SIGALRM n° :%d\n", getpid(), count);
+            sem = open_semaphore("sem_test-sem");
             P(sem);
             int shmd = shm_open("/share_memory__test",O_RDWR,0666);
             memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
             memory->count++;
-            //printf("pid de spy_simulation got : %d \n", processes_Pids->pid_spy_simulation);
-            munmap(processes_Pids, sizeof(struct Processes_Pids));
+            memory->memory_has_changed = 1;
+            munmap(memory, sizeof(memory_t));
             close(shmd);
             V(sem);
                 break;
@@ -55,9 +54,7 @@ void set_signals() {
 
     /* Set signal handlers */
      sigaction(SIGTERM, &action, NULL);
-    // sigaction(SIGINT, &action, NULL);
     sigaction(SIGALRM, &action, NULL);
-    //alarm(1);
 
     /*  Ignore SIGTSTP  */
     action.sa_handler = SIG_IGN;
@@ -68,34 +65,33 @@ void set_signals() {
 
 
  void set_pids_processes(void) {
-    struct Processes_Pids *processes_Pids = malloc(sizeof(struct Processes_Pids)); 
-    sem_t *sem; 
-    sem = open_semaphore("sem_test-sem");
+    memory_t *memory = (memory_t *)malloc(sizeof(memory_t));
+    int shmd = 0;
+    sem_t *sem = open_semaphore("sem_test-sem");
     P(sem);
-    int shmd = shm_open("/share_memory__test",O_RDWR,0666);
-    processes_Pids = mmap(NULL, sizeof(struct Processes_Pids), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
-    processes_Pids->pid_spy_simulation = getpid();
-    printf("pid de spy simulation set: %d \n", processes_Pids->pid_spy_simulation);
-    munmap(processes_Pids, sizeof(struct Processes_Pids));
+    shmd = shm_open("/share_memory__test",O_RDWR,0666);
+    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
+    memory->pid_spy_simulation = getpid();
+    printf("pid de spy simulation set: %d \n", memory->pid_spy_simulation);
+    munmap(memory, sizeof(memory_t));
     close(shmd);
     V(sem);
 } 
 
 void create_sem_memory_for_test(void) {
-    int shmd = shm_open("/share_memory__test",O_CREAT|O_RDWR,S_IRUSR|S_IWUSR);
-    if(ftruncate(shmd, sizeof(struct Processes_Pids)) == -1 ) 
+    int shmd = shm_open("/share_memory__test",O_CREAT|O_RDWR,/*S_IRUSR|S_IWUSR*/0666);
+    if(ftruncate(shmd, sizeof(memory_t)) == -1 ) {
         perror("can't create shared memory\n");
-
-    sem_t *sem;
-    sem = create_and_open_semaphore("sem_test-sem");
+    }
+    sem_t *sem = create_and_open_semaphore("sem_test-sem");
 }
 
 int main(void) {
 
     create_sem_memory_for_test();
     set_pids_processes();
-    while(1) {
-        set_signals();
-    }
-    return 0;
+     while(1) {
+         set_signals();
+     }
+     return 0;
 }

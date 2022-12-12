@@ -39,7 +39,7 @@ struct map_s {
     int rows;                            /*!< The number of rows of the city map.*/
     cell_t cells[MAX_COLUMNS][MAX_ROWS]; /*!< Cells that constitute the city map. */
 };
-struct Processes_Pids {
+typedef struct Processes_Pids {
     //  int pid;
     //  int a;
      int pid_spy_simulation;
@@ -47,7 +47,7 @@ struct Processes_Pids {
     //  int pid_spy_simulation;
     //  int pid_spy_simulation;
     //  int pid_spy_simulation;
-};
+} Processes_Pids;
 
 /**
  * \brief Shared memory used by all processes.
@@ -62,7 +62,8 @@ struct memory_s {
                                 *      wins!
                                 */
     /* TO COMPLETE */
-    struct Processes_Pids *Processes_Pids;
+    //Processes_Pids *processes_Pids;
+    int pid_spy_simulation;
     int count;
 };
 
