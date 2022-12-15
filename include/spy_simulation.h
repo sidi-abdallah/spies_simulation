@@ -20,6 +20,4 @@ void set_signal_handler();
 void signal_handler(int signum);
 void new_round();
 
-int manhattan_distance(int x1, int y1, int x2, int y2);
-
 #endif /* SPY_SIMULATION_H */

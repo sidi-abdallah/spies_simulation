@@ -67,6 +67,7 @@ struct memory_s {
     case_officer_t case_officer;
 
     pid_t spy_simulation_pid;
+    pid_t citzen_manager_pid;
     int count;
     /*
     - map

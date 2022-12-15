@@ -4,6 +4,8 @@
 #define ROUND_NUMBER 2016 
 #define TIME_STEP 200000
 
+#include "memory.h"
+
 // struct Processes_Pids {
 //      int pid;
 //      int a;

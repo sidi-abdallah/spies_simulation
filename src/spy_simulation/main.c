@@ -12,10 +12,13 @@ int main(int argc, char **argv)
 {
     srand(time(NULL));
 
+    printf(".bin/spy_simulation\n");
+
     memory_t * memory;
     sem_t *sem;
-    sem = create_and_open_semaphore("spy_simulation-sem");
-    P(sem);
+    sem = create_and_open_semaphore("/spy_simulation-sem");
+    destroy_semaphore(sem, "/spy_simulation-sem");
+    sem = create_and_open_semaphore("/spy_simulation-sem");
     int shmd = shm_open("/spy_simulation", O_CREAT | O_RDWR, (mode_t)0600);
     if(shmd == -1) {
         perror("shmd failed");
@@ -28,6 +31,8 @@ int main(int argc, char **argv)
         perror("mmap failed");
         return -1;
     }
+    P(sem);
+    
 
     create_map(memory);
     create_mailbox(memory);
@@ -40,6 +45,7 @@ int main(int argc, char **argv)
     V(sem);
 
     set_signal_handler();
+    printf("READY\n");
     while(1) {
 
     }

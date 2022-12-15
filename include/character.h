@@ -43,6 +43,7 @@ struct citizen_s {
     int work_row;
     int work_column;
     work_type_t work;
+    int shopping;
 };
 
 struct spie_s {

@@ -14,8 +14,11 @@ endif
 
 .PHONY: all clean distclean
 
-all: bin/spy_simulation bin/timer bin/monitor
+all: bin/main bin/spy_simulation bin/timer bin/monitor bin/citizen_manager
 
+bin/main : src/main.c
+	$(CC) $^ -o $@ $(LDFLAGS)
+	
 # ----------------------------------------------------------------------------
 # MONITOR
 # ----------------------------------------------------------------------------
@@ -41,7 +44,8 @@ src/monitor/monitor_common.o: src/monitor/monitor_common.c include/monitor_commo
 # ----------------------------------------------------------------------------
 bin/spy_simulation : src/spy_simulation/main.o \
 					 src/spy_simulation/spy_simulation.o \
-					 src/common/posix_semaphore.o
+					 src/common/posix_semaphore.o \
+					 src/common/functions.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 src/spy_simulation/main.o : src/spy_simulation/main.c include/spy_simulation.h
@@ -65,6 +69,22 @@ src/timer/timer.o : src/timer/timer.c include/timer.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
 # ----------------------------------------------------------------------------
+# CITIZEN_MANAGER
+# ----------------------------------------------------------------------------
+bin/citizen_manager : src/citizen_manager/main.o \
+					  src/citizen_manager/citizen_manager.o \
+					  src/common/posix_semaphore.o \
+					  src/common/functions.o \
+					  src/spy_simulation/spy_simulation.o
+	$(CC) $^ -o $@ $(LDFLAGS)
+
+src/citizen_manager/main.o : src/citizen_manager/main.c include/citizen_manager.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
+
+src/citizen_manager/citizen_manager.o : src/citizen_manager/citizen_manager.c include/citizen_manager.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
+
+# ----------------------------------------------------------------------------
 # COMMON OBJECTS FILES
 # ----------------------------------------------------------------------------
 
@@ -74,6 +94,10 @@ src/common/logger.o: src/common/logger.c include/logger.h
 src/common/posix_semaphore.o : src/common/posix_semaphore.c include/posix_semaphore.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
+src/common/functions.o : src/common/functions.c include/functions.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
+
+
 # ----------------------------------------------------------------------------
 # CLEANING
 # ----------------------------------------------------------------------------
@@ -82,4 +106,7 @@ clean:
 
 distclean: clean
 	rm bin/monitor
+
+clean_sem :
+	rm -f /dev/shm/*
 

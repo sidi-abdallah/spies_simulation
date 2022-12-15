@@ -25,6 +25,13 @@
         "ioctl.h": "c",
         "time.h": "c",
         "fcntl.h": "c",
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "citizen_manager.h": "c",
+        "math.h": "c",
+        "posix_semaphore.h": "c",
+        "timer.h": "c",
+        "semaphore.h": "c",
+        "functions.h": "c",
+        "assert.h": "c"
     }
 }

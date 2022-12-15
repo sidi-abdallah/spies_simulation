@@ -8,15 +8,14 @@
 #include <sys/mman.h> 
 #include <sys/stat.h>
 #include "posix_semaphore.h"
+#include "functions.h"
 
 memory_t * create_memory() {
     memory_t * memory = (memory_t *) malloc(sizeof(memory_t));
-
     create_map(memory);
     create_mailbox(memory);
     create_characters(memory);
-    memory->spy_simulation_pid = getpid();
-    printf("%d\n", memory->spy_simulation_pid);
+    memory->count = 0;
     return memory;
 }
 
@@ -131,6 +130,9 @@ void create_characters(memory_t * memory) {
     int i;
     int character_created;
     int random_building;
+    int random_work_type;
+    int random_work_building;
+    int j;
 
     for(i=0; i<NUMBER_OF_SPIES; i++) {
         character_created = 0;
@@ -148,24 +150,67 @@ void create_characters(memory_t * memory) {
     while(!character_created) {
         random_building = rand()%MAX_RESIDENTIAL_BUILDING;
         if(manhattan_distance(memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, memory->mailbox.row, memory->mailbox.column) < 4 && memory->residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
-            create_character(memory, NUMBER_OF_SPIES+1, CASE_OFFICER, memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, 0, 0, 0, NULL, &nb_spies);
+            create_character(memory, NUMBER_OF_SPIES, CASE_OFFICER, memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, 0, 0, 0, NULL, &nb_spies);
             memory->residential_buildings[random_building].affected_characters += 1;
             character_created = 1;
         }
     }
 
     create_character(memory, NUMBER_OF_SPIES+1, COUNTER_OFFICER, 0, 0, memory->city_hall.row, memory->city_hall.column, 0, NULL, NULL);
-    
-    for(i=NUMBER_OF_SPIES+2; i<NUMBER_OF_SPIES+2+NUMBER_OF_CITIZENS; i++) {
-        character_created = 0;
-        while(!character_created) {
+
+    for(i=NUMBER_OF_SPIES+2; i<NUMBER_OF_CHARACTERS; i++) {
+        int residential_ok = 0;
+        int work_ok = 0;
+        int work_row, work_column, home_row, home_column;
+        while(!residential_ok) {
             random_building = rand()%MAX_RESIDENTIAL_BUILDING;
             if(memory->residential_buildings[random_building].affected_characters < MAX_HABITATION_IN_RESIDENTIAL_BUILING) {
-                create_character(memory, i, CITIZEN, memory->residential_buildings[random_building].row, memory->residential_buildings[random_building].column, 0, 0, 0, &nb_citizens, NULL);
                 memory->residential_buildings[random_building].affected_characters += 1;
-                character_created = 1;
+                home_row = memory->residential_buildings[random_building].row;
+                home_column = memory->residential_buildings[random_building].column;
+                residential_ok = 1;
             }
         }
+        while(!work_ok) {
+            random_work_type = rand()%MAX_JOBS_TYPES;
+            switch(random_work_type) {
+                case COMPANY_WORK :
+                    random_work_building = random()%MAX_COMPANIES;
+                    for(j = 0; j < MAX_COMPANIES; j++) {
+                        if(memory->companies[j].affected_characters < 5) {
+                            memory->companies[j].affected_characters += 1;
+                            work_row = memory->companies[j].row;
+                            work_column = memory->companies[j].column;
+                            work_ok = 1;
+                        }
+                    }
+                    if(!work_ok) {
+                        memory->companies[random_work_building].affected_characters += 1;
+                        work_row = memory->companies[random_work_building].row;
+                        work_column = memory->companies[random_work_building].column;
+                        work_ok = 1;
+                    }
+                break;
+                case SUPERMARKET_WORK :
+                    random_work_building = random()%MAX_SUPERMARKETS;
+                    if(memory->supermarkets[random_work_building].affected_characters < MAX_AFFECTED_SUPERMARKET) {
+                        memory->supermarkets[random_work_building].affected_characters += 1;
+                        work_row = memory->supermarkets[random_work_building].row;
+                        work_column = memory->supermarkets[random_work_building].column;
+                        work_ok = 1;
+                    }
+                break;
+                case CITY_HALL_WORK :
+                    if(memory->city_hall.affected_characters < MAX_AFFECTED_CITY_HALL) {
+                        memory->city_hall.affected_characters += 1;
+                        work_row = memory->city_hall.row;
+                        work_column = memory->city_hall.column;
+                        work_ok = 1;
+                    }
+                break;
+            }
+        }
+        create_character(memory, i, CITIZEN, home_row, home_column, work_row, work_column, random_work_type, &nb_citizens, NULL);
     }
 }
 
@@ -210,10 +255,6 @@ void create_character(memory_t * memory, int id, character_type_t type, int home
         memory->counter_officer.health_points = MAX_LIFE_POINTS;
         break;
     }
-}
-
-int manhattan_distance(int x1, int y1, int x2, int y2) {
-    return abs(x2 - x1) + abs(y2 - y1);
 }
 
 void set_signal_handler() {
@@ -262,7 +303,6 @@ void new_round() {
     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd,0);
     if (memory == MAP_FAILED) {
         perror("mmap failed");
-        return -1;
     }
 
     memory->count += 1;
