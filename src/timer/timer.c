@@ -64,7 +64,7 @@ void sent_sig(void) {
     for(int round = 0; round < ROUND_NUMBER; round++) {
        //if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
        /*else*/ 
-       printf("%d\n", round);
+       // printf("%d\n", round);
        kill(pid_spy_simulation, SIGALRM);
         usleep(DEFAULT_SPAN_ROUND);
         //set_timer();
