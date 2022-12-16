@@ -26,8 +26,8 @@ typedef struct counter_officer_s counter_officer_t;
 
 struct character_s {
     int id;
-    int location_row;
-    int location_column;
+    int row;
+    int column;
 };
 
 /**

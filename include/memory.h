@@ -21,6 +21,7 @@
 #include "cell.h"
 #include "character.h"
 #include "common.h"
+#include "mesh_surveillance_network.h"
 #include <sys/types.h> 
 #include <unistd.h>
 
@@ -68,6 +69,8 @@ struct memory_s {
     int citizens_at_home;
     int citizens_at_work;
     int citizens_walking;
+
+    mesh_surveillance_network_t mesh_surveillance_network;
 
     pid_t spy_simulation_pid;
     pid_t citzen_manager_pid;

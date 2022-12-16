@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 #include "posix_semaphore.h"
 #include "functions.h"
+#include "mesh_surveillance_network.h"
 
 memory_t * create_memory() {
     memory_t * memory = (memory_t *) malloc(sizeof(memory_t));
@@ -288,10 +289,61 @@ void signal_handler(int signum) {
     }
 }
 
+void mesh_surveillance_network(memory_t * memory, character_t characters[NUMBER_OF_CHARACTERS-1]) {
+    int i, j, u, v, company_near;
+
+    for(i=0; i<NUMBER_OF_CHARACTERS-1; i++) {
+        company_near = 0;
+        for(u=characters[i].row -1; u <= characters[i].row +1; i++) {
+            for(v=characters[i].column -1; v <= characters[i].column +1; i++) {
+                if(u >= 0 && u < MAX_ROWS && v >= 0 && v < MAX_COLUMNS) {
+                    for(j = 0; j<MAX_COMPANIES; j++) {
+                        if(u == memory->companies[j].row && v == memory->companies[j].column) {
+                            company_near = 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        //If character is near of a company
+        if(company_near) {
+            memory->mesh_surveillance_network.near_company[characters[i].id] += 1;
+            //If he is near a company for 10 rounds
+            if(memory->mesh_surveillance_network.near_company[characters[i].id] > 10) {
+                mkfifo("mesh_surveillance_network", 0666);
+                fd = open("mesh_surveillance_network", O_WRONLY);
+                //TUBE NOMMÉ ENVOYER id + localisation
+            }
+        }
+    }
+}
+
+character_t * get_characters(memory_t * memory) {
+    character_t * characters;
+    characters = (character_t *)malloc(sizeof(character_t) * NUMBER_OF_CHARACTERS-1);
+    int i;
+    characters[0].row = memory->case_officer.location_row;
+    characters[0].column = memory->case_officer.location_column;
+    characters[0].id = memory->case_officer.id;
+    for(i = 0; i < NUMBER_OF_SPIES; i++) {
+        characters[i+1].row = memory->spies[i].location_row;
+        characters[i+1].column = memory->spies[i].location_column;
+        characters[i+1].id = memory->spies[i].id;
+    }
+    for(i = 0; i < NUMBER_OF_CITIZENS; i++) {
+        characters[i+1+NUMBER_OF_SPIES].row = memory->citizens[i].location_row;
+        characters[i+1+NUMBER_OF_SPIES].column = memory->citizens[i].location_column;
+        characters[i+1+NUMBER_OF_SPIES].id = memory->citizens[i].id;
+    } 
+    return characters;
+}
+
 void new_round() {
-    memory_t * memory;
+    memory_t * memory; 
     sem_t *sem;
     sem = create_and_open_semaphore("spy_simulation-sem");
+    
     P(sem);
     int shmd = shm_open("/spy_simulation", O_CREAT | O_RDWR, (mode_t)0600);
     if(shmd == -1) {
@@ -307,6 +359,7 @@ void new_round() {
 
     memory->count += 1;
     memory->memory_has_changed = 1;
+    mesh_surveillance_network(memory, get_characters(memory));
 
     munmap(memory, sizeof(memory_t));
     close(shmd);
