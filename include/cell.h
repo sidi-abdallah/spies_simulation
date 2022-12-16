@@ -18,6 +18,7 @@
 #ifndef CELL_H
 #define CELL_H
 
+#include "counter_intelligence.h"
 /**
  * \file cell.h
  *
@@ -49,6 +50,8 @@ enum company_type_e {
     VERY_LOW
 };
 
+
+typedef struct detection_material_s detection_material_t;
 typedef enum cell_type_e cell_type_t;
 typedef enum company_type_e company_type_t;
 typedef struct cell_s cell_t;
@@ -61,12 +64,16 @@ typedef struct residential_building_s residential_building_t;
 /**
  * \brief A cell within the map of the city.
  */
+
+
 struct cell_s {
     int column;           /*!< Column of the cell. */
     int row;              /*!< Row of the cell. */
     cell_type_t type;     /*!< Type of the cell (@see \enum e_cell_type). */
     int nb_of_characters; /*!< Max. number of characters on the cell. */
+    detection_material_t* detection;
 };
+
 
 struct residential_building_s {
     int column;
@@ -89,6 +96,7 @@ struct city_hall_s {
     int column;
     int row;
     int affected_characters;
+
 };
 
 struct supermarket_s {
