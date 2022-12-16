@@ -60,23 +60,18 @@ void *make_round(void * args) {
     }
     need_to_shop = memory->citizens[citizen_index].shopping;
 
-    printf("Citizen n°%d : H[%d,%d], W[%d,%d], L[%d,%d] (%d:%d)", memory->citizens[citizen_index].id, memory->citizens[citizen_index].home_row, memory->citizens[citizen_index].home_column, memory->citizens[citizen_index].work_row, memory->citizens[citizen_index].work_column, memory->citizens[citizen_index].location_row, memory->citizens[citizen_index].location_column, hour, minutes);
-
     if(hour >= 8 && ((work != SUPERMARKET_WORK && hour < 17) || (work == SUPERMARKET_WORK && (hour < 19 || (hour == 19 && minutes < 30))))) {
-        printf("WORK");
         destination_row = work_row;
         destination_column = work_column;
     }
     else if(need_to_shop && (work != SUPERMARKET_WORK && hour > 17)) {
-        printf("SUPERMARKET");
         int random_supermarket = rand()%MAX_SUPERMARKETS;
         destination_row = memory->supermarkets[random_supermarket].row;
         destination_column = memory->supermarkets[random_supermarket].column;
     }
     else {
-        printf("HOME");
         destination_row = home_row;
-        destination_column = work_column;
+        destination_column = home_column;
     }
     if(destination_row == location_row && destination_column == location_column) {
         next_row = destination_row;
@@ -93,7 +88,15 @@ void *make_round(void * args) {
     }
     memory->citizens[citizen_index].location_row = next_row;
     memory->citizens[citizen_index].location_column = next_column;
-    printf("=>%d,%d\n", next_row, next_column);
 
+    if(memory->citizens[citizen_index].location_row == memory->citizens[citizen_index].home_row && memory->citizens[citizen_index].location_column == memory->citizens[citizen_index].home_column) {
+        memory->citizens_at_home += 1;
+    }
+    else if(memory->citizens[citizen_index].location_row == memory->citizens[citizen_index].work_row && memory->citizens[citizen_index].location_column == memory->citizens[citizen_index].work_column) {
+        memory->citizens_at_work += 1;
+    }
+    else {
+        memory->citizens_walking+= 1;
+    }
     return NULL;
 }

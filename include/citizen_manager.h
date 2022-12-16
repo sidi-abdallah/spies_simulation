@@ -5,7 +5,7 @@
 
 struct args_s {
   memory_t * memory;
-  int citizen_index;  
+  int citizen_index;
 };
 typedef struct args_s args_t;
 

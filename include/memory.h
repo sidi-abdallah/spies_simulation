@@ -65,19 +65,13 @@ struct memory_s {
     spie_t spies[NUMBER_OF_SPIES];
     counter_officer_t counter_officer;
     case_officer_t case_officer;
+    int citizens_at_home;
+    int citizens_at_work;
+    int citizens_walking;
 
     pid_t spy_simulation_pid;
     pid_t citzen_manager_pid;
     int count;
-    /*
-    - map
-    - list of companies
-    - list of citizens
-    - mailbox
-    - list of spies
-    - counter officer
-    - case officer
-    */
 };
 
 #endif /* MEMORY_H */

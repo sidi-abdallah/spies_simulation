@@ -282,9 +282,9 @@ void display_citizen_information(WINDOW *window, memory_t *mem, int row, int col
     int number_of_citizens_at_work;
     int number_of_citizens_walking;
 
-    number_of_citizens_at_home = 128;
-    number_of_citizens_at_work = 0;
-    number_of_citizens_walking = 0;
+    number_of_citizens_at_home = mem->citizens_at_home;
+    number_of_citizens_at_work = mem->citizens_at_work;
+    number_of_citizens_walking = mem->citizens_walking;
    /* ---------------------------------------------------------------------- */
 
     wattron(window, A_BOLD);
