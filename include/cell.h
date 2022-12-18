@@ -18,6 +18,7 @@
 #ifndef CELL_H
 #define CELL_H
 
+#include "common.h"
 /**
  * \file cell.h
  *
@@ -83,6 +84,7 @@ struct company_s {
      * type
      * message
     */
+    char information1[MAX_LENGTH_OF_MESSAGE];
 };
 
 struct city_hall_s {

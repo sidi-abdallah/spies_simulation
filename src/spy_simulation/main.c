@@ -31,9 +31,8 @@ int main(int argc, char **argv)
         perror("mmap failed");
         return -1;
     }
-    P(sem);
-    
 
+    P(sem);
     create_map(memory);
     create_mailbox(memory);
     create_characters(memory);
@@ -46,7 +45,5 @@ int main(int argc, char **argv)
 
     set_signal_handler();
     printf("READY\n");
-    while(1) {
-
-    }
+    while(1);
 }

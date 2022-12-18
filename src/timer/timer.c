@@ -22,9 +22,9 @@
 void get_pids_processes(void) {
     memory_t *memory = malloc(sizeof(memory_t)); 
     sem_t *sem; 
-    sem = open_semaphore("sem_test-sem");
+    sem = open_semaphore("spy_simulation-sem");
             P(sem);
-            int shmd = shm_open("/share_memory__test",O_RDWR,0666);
+            int shmd = shm_open("/spy_simulation",O_RDWR,0666);
             memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
             printf("pid de spy_simulation got : %d \n", memory->spy_simulation_pid);
             munmap(memory, sizeof(memory_t));
