@@ -19,31 +19,20 @@
 
 
 //créer un sémaphore et un mémoire partagé de test
-void get_pids_processes(void) {
+pid_t get_pids_processes(void) {
     memory_t *memory = malloc(sizeof(memory_t)); 
+    pid_t spy_simulation_pid;
     sem_t *sem; 
     sem = open_semaphore("spy_simulation-sem");
-            P(sem);
-            int shmd = shm_open("/spy_simulation",O_RDWR,0666);
-            memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
-            printf("pid de spy_simulation got : %d \n", memory->spy_simulation_pid);
-            munmap(memory, sizeof(memory_t));
-            close(shmd);
-            V(sem);
-}
-
-// Le pas de temps (200ms ici)
-void set_timer(void) {
-    struct itimerval it;
-
-    /* Clear itimerval struct members */
-    timerclear(&it.it_interval);
-    timerclear(&it.it_value);
-
-    /* Set timer */
-    it.it_interval.tv_usec = TIME_STEP;
-    it.it_value.tv_usec = TIME_STEP;
-    setitimer(ITIMER_REAL, &it, NULL);
+    P(sem);
+    int shmd = shm_open("/spy_simulation",O_RDWR,0666);
+    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
+    spy_simulation_pid = memory->spy_simulation_pid;
+    printf("pid de spy_simulation got : %d \n", memory->spy_simulation_pid);
+    munmap(memory, sizeof(memory_t));
+    close(shmd);
+    V(sem);
+    return spy_simulation_pid;
 }
 
 void sent_sig(void) {
@@ -51,17 +40,9 @@ void sent_sig(void) {
     memory_t *memory = malloc(sizeof(memory_t)); 
     sem_t *sem; 
     
-    int shmd = shm_open("/spy_simulation",O_RDWR,0666);
-    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
+    pid_spy_simulation = get_pids_processes();
     
-    sem = open_semaphore("/spy_simulation-sem");
-    P(sem);
-    pid_spy_simulation = memory->spy_simulation_pid;
-    V(sem);
-
-    munmap(memory, sizeof(memory_t));
-    
-    for(int round = 0; round < ROUND_NUMBER; round++) {
+    for(int round = 0; round < 100; round++) {
        //if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
        /*else*/ 
        // printf("%d\n", round);

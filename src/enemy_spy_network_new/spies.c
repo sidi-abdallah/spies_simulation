@@ -77,10 +77,11 @@ void *spie_routine(void *args) {
     int shopping = memory->spies[spie_index].shopping;
     int stay_at_home = memory->spies[spie_index].stay_at_home;
     int rand_day_routine = memory->spies[spie_index].rand_day_routine;
-
+    //printf("%d\n",hour);
 
     if(hour==17 && minutes==0) {
         rand_time_for_stoling  = rand()%100 + 1;
+      //  printf("c'est 17h 00\n");
     }
     //In the night between 17H and 8H
     if(hour >= 17 || hour <= 8) {
@@ -394,6 +395,7 @@ int main(void)
     pthread_t *t;
     memory_t *memory;
     args_spy *args;
+    int count = 0;
     
     srand(time(NULL));
     
@@ -422,8 +424,10 @@ int main(void)
         P(sem);
         shmd = shm_open("/spy_simulation", O_RDWR, 0666);
         memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-        if (memory->memory_has_changed)
+        
+        if (count != memory->count)
         {
+            count = memory->count;
             t = (pthread_t *)malloc(sizeof(pthread_t) * SPIES_NUMBER);
             args = (args_spy *)malloc(sizeof(args_spy) * SPIES_NUMBER);
             for (i = 0; i < SPIES_NUMBER; i++)
