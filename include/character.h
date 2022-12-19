@@ -66,9 +66,9 @@ struct spie_s {
     int hour;
     int random_supermarket;
     int * companies_stolen_yet;
+    company_type_t message_importance;
     char stolen_message_content[MAX_LENGTH_OF_MESSAGE];
-    enum company_type_e msg_importance;
-
+    int walking_to_put_fake_msg;
 };
 
 struct case_officer_s {

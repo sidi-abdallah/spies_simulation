@@ -84,7 +84,7 @@ struct company_s {
      * type
      * message
     */
-    char information1[MAX_LENGTH_OF_MESSAGE];
+    char information[MAX_LENGTH_OF_MESSAGE];
 };
 
 struct city_hall_s {
