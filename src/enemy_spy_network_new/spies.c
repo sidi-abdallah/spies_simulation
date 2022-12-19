@@ -58,8 +58,7 @@ void get_next_cell(memory_t *memory, int spie_index, int destination_row, int de
 
 
 void *spie_routine(void *args) {
-    int company_row = 0, company_col = 0 , destination_row = 0, destination_col = 0;
-    int random_supermarket = 0, next_row = 0, next_column = 0;
+    int company_row = 0, company_col = 0 , destination_row = 0, destination_col = 0,  next_row = 0, next_column = 0;
 
     args_spy * arguments = (args_spy *) args;
     memory_t * memory = arguments->memory;
@@ -77,21 +76,25 @@ void *spie_routine(void *args) {
     int shopping = memory->spies[spie_index].shopping;
     int stay_at_home = memory->spies[spie_index].stay_at_home;
     int rand_day_routine = memory->spies[spie_index].rand_day_routine;
+    int random_supermarket = memory->spies[spie_index].random_supermarket;
     //printf("%d\n",hour);
 
-    if(hour==17 && minutes==0) {
-        rand_time_for_stoling  = rand()%100 + 1;
-      //  printf("c'est 17h 00\n");
+    if(hour==17) {
+        rand_time_for_stoling  = (rand()%100) + 1;
+    //    printf("c'est 17h 00\n");
     }
     //In the night between 17H and 8H
-    if(hour >= 17 || hour <= 8) {
-        if(hour >= 17 && hour < 20 && rand_time_for_stoling <= 2) {
+    printf("rand_time_for_stoling = %d\n", rand_time_for_stoling);
+    if(hour >= 17 || hour < 8) {
+        printf(" spie entre 17h et 8h\n");
+        if(hour >= 17 && hour < 20 && rand_time_for_stoling <= 100) {
             if(round_number_before_stole == 0) {
                 index_company_being_stolen  = rand()%MAX_COMPANIES;
                 while(memory->spies[spie_index].companies_stolen_yet[index_company_being_stolen]) {
                     index_company_being_stolen  = rand()%MAX_COMPANIES;
                 }
                 memory->spies[spie_index].companies_stolen_yet[index_company_being_stolen] = 1;
+                round_number_before_stole++;
                 
             }
             else {
@@ -100,6 +103,7 @@ void *spie_routine(void *args) {
                 get_next_cell(memory, spie_index, company_row, company_col, &next_row, &next_column);
                 if(next_row == company_row && next_column == company_col) {
                     if(round_number_before_stole < 12) {
+                        printf("nombre de tours < 12 : %d\n", round_number_before_stole);
                         round_number_before_stole++;
                     }
                     // else if(round_number_before_stole == 12) {
@@ -140,15 +144,23 @@ void *spie_routine(void *args) {
 
     //In the day between 8H and 17H
     } else {
-        if(memory->spies[spie_index].hour == (hour - 1)) {
+        printf("spie entre 8h et 17h\n");
+        if(hour == 8) rand_day_routine = rand()%100;
+        if(memory->spies[spie_index].hour != hour ) {
             memory->spies[spie_index].hour = hour;
+            printf("spy new hour %d\n", hour);
+            printf(" TID : %ld\n", pthread_self());
             rand_day_routine = rand()%100;
+            shopping = 0;
+            stroll_in_city = 0;
+            stay_at_home = 0;
         }
         else {
             if(rand_day_routine <= 30) {
                 destination_row = home_row;
                 destination_col = home_column;
                 stay_at_home = 1;
+                printf("spie chez lui\n");
                 shopping = 0;
                 stroll_in_city = 0;
             } 
@@ -156,12 +168,15 @@ void *spie_routine(void *args) {
                 if(shopping == 0) {
                     random_supermarket = rand()%MAX_SUPERMARKETS;
                 }
+                printf("spie supermarché\n");
+
                 destination_row = memory->supermarkets[random_supermarket].row;
                 destination_col = memory->supermarkets[random_supermarket].column;
                 shopping = 1;
                 stay_at_home = 0;
                 stroll_in_city = 0;
             } else {
+                printf("spie se promene\n");
                     //gestion de promenade ici (later).
             }
         }
@@ -171,9 +186,12 @@ void *spie_routine(void *args) {
         }
         else {
             get_next_cell(memory, spie_index, destination_row, destination_col, &next_row, &next_column);
+            printf("spy change position (%d, %d) \n", next_row, next_column);
+
         }
         location_row = next_row;
         location_column = next_column;
+        printf("pos actual of %ld :(%d,%d)\n",pthread_self(), location_row, location_column);
     }
 
     //recuperation du contexte
@@ -186,7 +204,9 @@ void *spie_routine(void *args) {
     memory->spies[spie_index].shopping = shopping;
     memory->spies[spie_index].stay_at_home = stay_at_home;
     memory->spies[spie_index].rand_day_routine = rand_day_routine;
+    memory->spies[spie_index].random_supermarket = random_supermarket;
     arguments->memory = memory;
+    arguments->memory->memory_has_changed = 1;
 
 
     return NULL;
@@ -410,6 +430,7 @@ int main(void)
         memory->spies[spie_index].shopping = 0;
         memory->spies[spie_index].stay_at_home = 0;
         memory->spies[spie_index].rand_day_routine = 0;
+        memory->spies[spie_index].random_supermarket = 0;
         memory->spies[spie_index].hour = get_hour(memory);
         memory->spies[spie_index].companies_stolen_yet = (int*)calloc(MAX_COMPANIES, sizeof(int));
     }

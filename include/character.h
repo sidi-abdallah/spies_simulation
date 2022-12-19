@@ -64,6 +64,7 @@ struct spie_s {
     int stay_at_home;
     int stroll_in_city;
     int hour;
+    int random_supermarket;
     int * companies_stolen_yet;
     char stolen_message_content[MAX_LENGTH_OF_MESSAGE];
     enum company_type_e msg_importance;

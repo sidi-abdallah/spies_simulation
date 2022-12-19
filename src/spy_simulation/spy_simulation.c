@@ -275,7 +275,7 @@ void signal_handler(int signum) {
     switch (signum) {
         case SIGALRM:
             new_round();
-           // printf("signal SIGALRM\n");
+           printf("signal SIGALRM\n");
             break;
         case SIGTERM:
             //printf("signal SIGTERM\n");
