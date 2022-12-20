@@ -260,10 +260,10 @@ void *spie_routine(void *args) {
 //     return mailbox;
 // }
 
-// int manhattan_distance(int x1, int y1, int x2, int y2)
-// {
-//     return abs(x2 - x1) + abs(y2 - y1);
-// }
+int manhattan_distance(int x1, int y1, int x2, int y2)
+{
+    return abs(x2 - x1) + abs(y2 - y1);
+}
 
 // int get_round(void)
 // {

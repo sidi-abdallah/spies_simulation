@@ -14,7 +14,7 @@ endif
 
 .PHONY: all clean distclean
 
-all: bin/main bin/spy_simulation bin/timer bin/monitor bin/citizen_manager bin/enemy_spy_network
+all: bin/main bin/spy_simulation bin/timer bin/monitor bin/citizen_manager bin/enemy_spy_network bin/enemy_country
 
 bin/main : src/main.c
 	$(CC) $^ -o $@ $(LDFLAGS)
@@ -78,6 +78,18 @@ bin/enemy_spy_network : src/enemy_spy_network_new/spies.o \
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 src/enemy_spy_network_new/spies.o : src/enemy_spy_network_new/spies.c 
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
+
+
+# ----------------------------------------------------------------------------
+# CASE_OFFICER
+# ----------------------------------------------------------------------------
+
+bin/enemy_country : src/enemy_country/enemy_country.o \
+						src/common/posix_semaphore.o
+	$(CC) $^ -o $@ $(LDFLAGS)
+
+src/enemy_country/spies.o : src/enemy_country/enemy_country.c 
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
 # ----------------------------------------------------------------------------

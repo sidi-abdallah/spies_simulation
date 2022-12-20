@@ -55,7 +55,7 @@ struct spie_s {
     int home_row;
     int home_column;
     int nb_of_stolen_companies;
-    int has_license_to_kill;
+    int  has_license_to_kill;
     int round_number_before_stole;
     int rand_time_for_stoling;  
     int rand_day_routine;
@@ -78,6 +78,8 @@ struct case_officer_s {
     int location_column;
     int home_row;
     int home_column;
+    int random_chosen_supermarket_index; 
+    int supermarket_visited; // 0 or 1
 };
 
 struct counter_officer_s {
