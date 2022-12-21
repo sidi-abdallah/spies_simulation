@@ -358,7 +358,7 @@ character_t * get_characters(memory_t * memory) {
 void new_round() {
     memory_t * memory; 
     sem_t *sem;
-    sem = create_and_open_semaphore("spy_simulation-sem");
+    sem = open_semaphore("spy_simulation-sem");
     
     P(sem);
     int shmd = shm_open("/spy_simulation", O_CREAT | O_RDWR, (mode_t)0600);

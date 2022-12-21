@@ -8,7 +8,7 @@
 #include "spy_simulation.h"
 #include "posix_semaphore.h"
 
-int main(int argc, char **argv)
+int main(void)
 {
     srand(time(NULL));
 
@@ -39,4 +39,5 @@ int main(int argc, char **argv)
        // pause();
         set_signal_handler();
     }
+    return 0;
 }
