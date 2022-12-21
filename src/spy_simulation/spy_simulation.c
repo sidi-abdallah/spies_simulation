@@ -289,22 +289,30 @@ void signal_handler(int signum) {
     }
 }
 
-void mesh_surveillance_network(memory_t * memory, character_t characters[NUMBER_OF_CHARACTERS-1]) {
-    int i, j, u, v, company_near, working;
+void mesh_surveillance_network(memory_t * memory) {
+    int i, j, u, v, company_near, working, at_home;
+
+    character_t *characters = get_characters(memory);
 
     for(i=0; i<NUMBER_OF_CHARACTERS-1; i++) {
         company_near = 0;
         working = 0;
+        at_home = 0;
 
         for(j = 0; j<MAX_COMPANIES; j++) {
             if(characters[i].row == memory->companies[j].row && characters[i].column == memory->companies[j].column) {
                 working = 1;
             }
         }
+        for(j = 0; j<MAX_RESIDENTIAL_BUILDING; j++) {
+            if(characters[i].row == memory->residential_buildings[j].row && characters[i].column == memory->residential_buildings[j].column) {
+                at_home = 1;
+            }
+        }
         //If not working in a company
-        if(!working) {
-            for(u=characters[i].row -1; u <= characters[i].row +1; i++) {
-                for(v=characters[i].column -1; v <= characters[i].column +1; i++) {
+        if(!working && !at_home) {
+            for(u=characters[i].row -1; u <= characters[i].row +1; u++) {
+                for(v=characters[i].column -1; v <= characters[i].column +1; v++) {
                     if(u >= 0 && u < MAX_ROWS && v >= 0 && v < MAX_COLUMNS) {
                         for(j = 0; j<MAX_COMPANIES; j++) {
                             if(u == memory->companies[j].row && v == memory->companies[j].column) {
@@ -320,7 +328,7 @@ void mesh_surveillance_network(memory_t * memory, character_t characters[NUMBER_
                 //If he is near a company for 10 rounds, send a SIGALARM
                 if(memory->mesh_surveillance_network.near_company[characters[i].id] >= NUMBER_SUSPICIOUS_ROUND) {
                     memory->mesh_surveillance_network.id_suspicious_character = characters[i].id;
-                    kill(memory->counter_intelligence_officer_pid, SIGALRM);
+                    //kill(memory->counter_intelligence_officer_pid, SIGALRM);
                 }
             }
         }
@@ -367,7 +375,7 @@ void new_round() {
 
     memory->count += 1;
     memory->memory_has_changed = 1;
-    mesh_surveillance_network(memory, get_characters(memory));
+    mesh_surveillance_network(memory);
 
     munmap(memory, sizeof(memory_t));
     close(shmd);

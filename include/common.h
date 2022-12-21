@@ -102,7 +102,7 @@
   * ---------------------------------------------------------------------------
  */
 #define ROUND_NUMBER        2016   /*!< Total number of rounds in the simulation*/
-#define DEFAULT_SPAN_ROUND  100000 /*!< Time of a round in the simulation*/
+#define DEFAULT_SPAN_ROUND  1000000 /*!< Time of a round in the simulation*/
 
 /*
  * ---------------------------------------------------------------------------

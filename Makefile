@@ -102,10 +102,10 @@ src/common/functions.o : src/common/functions.c include/functions.h
 # CLEANING
 # ----------------------------------------------------------------------------
 clean:
-	rm src/monitor/*.o src/common/*.o src/spy_simulation/*.o src/citizen_manager/*.o src/timer/*.o
+	rm -f src/monitor/*.o src/common/*.o src/spy_simulation/*.o src/citizen_manager/*.o src/timer/*.o
 
 distclean: clean
-	rm bin/*
+	rm -f bin/*
 
 clean_sem :
 	rm -f /dev/shm/*

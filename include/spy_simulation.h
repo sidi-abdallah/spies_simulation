@@ -47,7 +47,7 @@ character_t * get_characters(memory_t * memory);
 /**
  * \brief Manage the meshed surveillance network in order to find spies.
  */
-void mesh_surveillance_network(memory_t * memory, character_t characters[NUMBER_OF_CHARACTERS-1]);
+void mesh_surveillance_network(memory_t * memory);
 
 /**
  * \brief Set the handler of the signals.

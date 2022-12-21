@@ -21,6 +21,7 @@ int main() {
     sem_t *sem; 
     int shmd;
     int i;
+    int count = 0;
 
     pthread_t *t;
     args_t *args;
@@ -33,7 +34,8 @@ int main() {
         memory->citizens_at_home = 0;
         memory->citizens_at_work = 0;
         memory->citizens_walking = 0;
-        if (memory->memory_has_changed) {
+        if (memory->count != count) {
+            count = memory->count;
             t = (pthread_t *) malloc(sizeof(pthread_t) * NUMBER_OF_CITIZENS);
             args = (args_t *) malloc(sizeof(args_t) * NUMBER_OF_CITIZENS);
             for(i=0; i<NUMBER_OF_CITIZENS; i++) {
