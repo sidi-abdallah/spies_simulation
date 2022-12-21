@@ -17,7 +17,6 @@ int main() {
     srand(time(NULL));
 
     memory_t *memory;
-    citizen_t citizens[NUMBER_OF_CITIZENS];
     sem_t *sem; 
     int shmd;
     int i;

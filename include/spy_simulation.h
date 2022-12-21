@@ -12,8 +12,6 @@
 #include "cell.h"
 #include "character.h"
 
-memory_t * create_memory();
-
 /**
  * \brief Create the map of the map according to configuration given in the subject.
  */

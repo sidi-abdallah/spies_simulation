@@ -26,9 +26,9 @@ typedef struct case_officer_s case_officer_t;
 typedef struct counter_officer_s counter_officer_t;
 
 struct character_s {
-    int id;
-    int row;
-    int column;
+    int id;      /*!< Id of the character. */
+    int row;     /*!< Row of the location of the character. */
+    int column;  /*!< Column of the location of the character. */
 };
 
 /**

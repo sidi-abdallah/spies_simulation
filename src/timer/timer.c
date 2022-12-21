@@ -37,12 +37,10 @@ pid_t get_pids_processes(void) {
 
 void sent_sig(void) {
     pid_t pid_spy_simulation;
-    memory_t *memory = malloc(sizeof(memory_t)); 
-    sem_t *sem; 
     
     pid_spy_simulation = get_pids_processes();
     
-    for(int round = 0; round < 300; round++) {
+    for(int round = 0; round < ROUND_NUMBER; round++) {
        //if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
        /*else*/ 
        // printf("%d\n", round);

@@ -1,40 +1,22 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#define ROUND_NUMBER 2016 
-#define TIME_STEP 200000
+/**
+ * \file timer.h
+ *
+ * Defines functions used by the timer.
+ */
 
 #include "memory.h"
 
-// struct Processes_Pids {
-//      int pid;
-//      int a;
-//      int pid_spy_simulation;
-//      // int pid_spy_simulation;
-//      // int pid_spy_simulation;
-//      // int pid_spy_simulation;
-// };
-
- 
 /**
- * \brief Sets up the timer using the TIME_STEP value.
+ * \brief Collect pid of the main process.
  */
-void set_timer(void);
+pid_t get_pids_processes(void);
 
 /**
- * \brief Defines signal handler for the monitor (used by \fn set_signals()).
- *
- * \param signum The signal number.
+ * \brief Send signals to the main process a defined number of times with a span defined in common.h.
  */
-void handler(int signum);
-
-/**
- * \brief Sets up the signal handler.
- */
-void set_signals(void);
-
-void create_sem_memory_for_test(void);
-
 void sent_sig(void);
 
 #endif /* TIMER_H */

@@ -73,12 +73,16 @@ src/timer/timer.o : src/timer/timer.c include/timer.h
 # ENEMY_SPY_NETWORK
 # ----------------------------------------------------------------------------
 
-bin/enemy_spy_network : src/enemy_spy_network/enemy_spy_network.o \
+bin/enemy_spy_network : src/enemy_spy_network/main.o \
+						src/enemy_spy_network/enemy_spy_network.o \
 						src/common/posix_semaphore.o \
 						src/common/functions.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
-src/enemy_spy_network/enemy_spy_network.o : src/enemy_spy_network/enemy_spy_network.c 
+src/enemy_spy_network/main.o : src/enemy_spy_network/main.c include/enemy_spy_network.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
+	
+src/enemy_spy_network/enemy_spy_network.o : src/enemy_spy_network/enemy_spy_network.c include/enemy_spy_network.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
 # ----------------------------------------------------------------------------

@@ -55,27 +55,32 @@ struct memory_s {
                                 * - 3: the counterintelligence officer did not discover the mailbox. The spy network
                                 *      wins!
                                 */
-    map_t map;                  /*!<Contains the map of the city. */
-    city_hall_t city_hall;
-    company_t companies[MAX_COMPANIES];
-    residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING];
-    supermarket_t supermarkets[MAX_SUPERMARKETS];
-    mailbox_t mailbox;
     
-    citizen_t citizens[NUMBER_OF_CITIZENS];
-    spie_t spies[NUMBER_OF_SPIES];
-    counter_officer_t counter_officer;
-    case_officer_t case_officer;
-    int citizens_at_home;
-    int citizens_at_work;
-    int citizens_walking;
+    map_t map;                  /*!<Contains the map of the city. */
 
-    mesh_surveillance_network_t mesh_surveillance_network;
+    city_hall_t city_hall;                                                   /*!< Structure of the city hall. */
+    company_t companies[MAX_COMPANIES];                                      /*!< Structures of the companies. */
+    residential_building_t residential_buildings[MAX_RESIDENTIAL_BUILDING];  /*!< Structures of the residental buildings. */
+    supermarket_t supermarkets[MAX_SUPERMARKETS];                            /*!< Structures of the supermakets. */
+    mailbox_t mailbox;                                                       /*!< Structure of the mailbox. */
+    
+    citizen_t citizens[NUMBER_OF_CITIZENS];  /*!< Structures of the citizens. */
+    spie_t spies[NUMBER_OF_SPIES];           /*!< Structures of the spies. */
+    counter_officer_t counter_officer;       /*!< Structure of the counter intelligence officer. */
+    case_officer_t case_officer;             /*!< Structure of the case officer. */
+    int citizens_at_home;                    /*!< Number of citizens at home. */
+    int citizens_at_work;                    /*!< Number of citizens at work. */
+    int citizens_walking;                    /*!< Number of citizens walking in the city. */
 
-    pid_t spy_simulation_pid;
-    pid_t citzen_manager_pid;
-    pid_t counter_intelligence_officer_pid;
-    int count;
+    mesh_surveillance_network_t mesh_surveillance_network;  /*!< Structure of the meshed suiveillance network. */
+
+    pid_t spy_simulation_pid;                /*!< Pid of the spy_simulation process. */
+    pid_t citzen_manager_pid;                /*!< Pid of the citzen_manager process. */
+    pid_t counter_intelligence_officer_pid;  /*!< Pid of the counter_intelligence_officer process. */
+    pid_t spies_pid[NUMBER_OF_SPIES];        /*!< Pids of the spies process. */
+    pid_t case_officer_pid;                  /*!< Pid of the case_officer process. */
+    
+    int count;  /*!< Current round of the simulation. */
 };
 
 #endif /* MEMORY_H */

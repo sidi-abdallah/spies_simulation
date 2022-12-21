@@ -5,14 +5,8 @@
 #include <stdio.h>
 
 #include "functions.h"
-
-int get_hour(memory_t *memory) {
-    return ((int) floor((memory->count/6)))%24;
-}
-
-int get_minutes(memory_t *memory) {
-    return (memory->count * 10)%60;
-}
+#include "memory.h"
+#include "cell.h"
 
 void get_next_cell(memory_t *memory, int citizen_index, int destination_row, int destination_column, int * next_row, int * next_column) {
     int i, j, random_cell;
@@ -23,18 +17,39 @@ void get_next_cell(memory_t *memory, int citizen_index, int destination_row, int
     for(i = memory->citizens[citizen_index].location_row - 1; i <= memory->citizens[citizen_index].location_row + 1; i++) {
         for(j = memory->citizens[citizen_index].location_column - 1; j <= memory->citizens[citizen_index].location_column + 1; j++) {
             if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS) {
-                if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->citizens[citizen_index].location_row, memory->citizens[citizen_index].location_column, destination_row, destination_column)) {
-                    reachable_cells_row[count_reachable_cells] = i;
-                    reachable_cells_column[count_reachable_cells] = j;
-                    count_reachable_cells += 1;
+                if(i == destination_row && j == destination_column) {
+                        *next_row = i;
+                        *next_column = j;
+                        return;
+                }
+                if(memory->map.cells[i][j].type == WASTELAND) {
+                    if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->citizens[citizen_index].location_row, memory->citizens[citizen_index].location_column, destination_row, destination_column)) {
+                        reachable_cells_row[count_reachable_cells] = i;
+                        reachable_cells_column[count_reachable_cells] = j;
+                        count_reachable_cells += 1;
+                    }
                 }
             }
         }
+    }
+
+    if(count_reachable_cells == 0) {
+        for(i = memory->citizens[citizen_index].location_row - 1; i <= memory->citizens[citizen_index].location_row + 1; i++) {
+            for(j = memory->citizens[citizen_index].location_column - 1; j <= memory->citizens[citizen_index].location_column + 1; j++) {
+                if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS && memory->map.cells[i][j].type == WASTELAND) {
+                    *next_row = i;
+                    *next_column = j;
+                    return;
+                }
+            }
+        } 
+    } 
+    else {
+        random_cell = rand()%count_reachable_cells;
+        *next_row = reachable_cells_row[random_cell];
+        *next_column = reachable_cells_column[random_cell];
     } 
     
-    random_cell = rand()%count_reachable_cells;
-    *next_row = reachable_cells_row[random_cell];
-    *next_column = reachable_cells_column[random_cell];
 }
 
 void *make_round(void * args) {

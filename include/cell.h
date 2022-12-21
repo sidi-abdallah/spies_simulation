@@ -28,6 +28,7 @@
  * - The City Hall (\e CITY_HALL);
  * - A company (\e COMPANY);
  * - SUPERMARKET (\e SUPERMARKET).
+ * Defines also the structures associed to each place.
  */
 
 
@@ -70,35 +71,35 @@ struct cell_s {
 };
 
 struct residential_building_s {
-    int column;
-    int row;
-    int affected_characters;
+    int column;               /*!< Column of the building. */
+    int row;                  /*!< Row of the building. */
+    int affected_characters;  /*!< Number of habitants in the building. */
 };
 
 struct company_s {
-    int row;
-    int column;
-    int affected_characters;
-    int number_informations;
-    char **informations;
-    company_type_t type;
+    int row;                  /*!< Row of the company. */
+    int column;               /*!< Column of the company. */
+    int affected_characters;  /*!< Number of persons working in the company. */
+    int number_informations;  /*!< Number of informations in the company. */
+    char **informations;      /*!< Informations in the company. */
+    company_type_t type;      /*!< Type of the company. */
 };
 
 struct city_hall_s {
-    int column;
-    int row;
-    int affected_characters;
+    int column;               /*!< Column of the city hall. */
+    int row;                  /*!< Row of the city hall. */
+    int affected_characters;  /*!< Number of persons working in the city hall. */
 };
 
 struct supermarket_s {
-    int column;
-    int row;
-    int affected_characters;
+    int column;               /*!< Column of the supermarket. */
+    int row;                  /*!< Row of the supermarket. */
+    int affected_characters;  /*!< Number of persons working in the supermarket. */
 };
 
 struct mailbox_s {
-    int row;
-    int column;
+    int row;     /*!< Row of the mailbox. */
+    int column;  /*!< Column of the mailbox. */
     /**
      * liste de messages
     */

@@ -14,30 +14,7 @@
 #include "functions.h"
 #include "memory.h"
 #include "cell.h"
-
-//#include "citizen_manager.h"
-typedef struct args_spy {
-    memory_t *memory;
-    int spie_index;
-} args_spy;
-
-#define SPIES_NUMBER 3
-#define ROUND_NB_BEFORE_STOLE 12
-#define ADJACENT_CASES_NUMBER 8
-
-
-int get_hour(memory_t *memory) {
-    return ((int) floor((memory->count/6)))%24;
-}
-
-int get_minutes(memory_t *memory) {
-    return (memory->count * 10)%60;
-}
-
-int manhattan_distance(int x1, int y1, int x2, int y2)
-{
-    return abs(x2 - x1) + abs(y2 - y1);
-}
+#include "enemy_spy_network.h"
 
 void get_next_cell(memory_t *memory, int spie_index, int destination_row, int destination_column, int * next_row, int * next_column) {
     int i, j, random_cell;
@@ -187,11 +164,7 @@ void day_routine(memory_t *memory, int spie_index) {
 }
 
 
-void *spie_routine(void *args) {
-
-    args_spy * arguments = (args_spy *) args;
-    memory_t * memory = arguments->memory;
-    int spie_index = arguments->spie_index;
+void spie_routine(memory_t *memory, int spie_index) {
     int hour = get_hour(memory);
     //printf("%d\n",hour);
 
@@ -229,14 +202,27 @@ void *spie_routine(void *args) {
         //printf("spie entre 8h et 17h\n");
         day_routine(memory, spie_index);
     }
+}
 
-    //recuperation du contexte
-    
-    arguments->memory = memory;
-    arguments->memory->memory_has_changed = 1;
+void main_spy(int index) {
+    int shmd;
+    sem_t *sem;
+    memory_t *memory;
 
+    int count = 0;
+    while(1) {
+        sem = open_semaphore("spy_simulation-sem");
+        P(sem);
+        shmd = shm_open("/spy_simulation", O_RDWR, 0666);
+        memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
 
-    return NULL;
+        if (count != memory->count) {
+            spie_routine(memory, index);
+        }
+        munmap(memory, sizeof(memory_t));
+        close(shmd);
+        V(sem);
+    }
 }
 
 
@@ -431,70 +417,3 @@ void *spie_routine(void *args) {
 //     last_round = current_round;
 // }
 // // while(current_round != last_round + ROUND_NB_B    memory_t * memory = malloc(sizeof(memory_t));
-
-int main(void)
-{
-    int shmd, i;
-    sem_t *sem;
-    pthread_t *t;
-    memory_t *memory;
-    args_spy *args;
-    int count = 0;
-    
-    srand(time(NULL));
-    
-    sem = open_semaphore("spy_simulation-sem");
-    P(sem);
-    shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-    for(int spie_index = 0; spie_index < SPIES_NUMBER; spie_index++) {
-        memory->spies[spie_index].rand_time_for_stoling = 0;
-        memory->spies[spie_index].round_number_before_stole = 0;
-        memory->spies[spie_index].stroll_in_city = 0;
-        memory->spies[spie_index].shopping = 0;
-        memory->spies[spie_index].stay_at_home = 0;
-        memory->spies[spie_index].rand_day_routine = 0;
-        memory->spies[spie_index].random_supermarket = 0;
-        memory->spies[spie_index].walking_to_put_fake_msg = 0;
-        memory->spies[spie_index].hour = get_hour(memory);
-        memory->spies[spie_index].companies_stolen_yet = (int*)calloc(MAX_COMPANIES, sizeof(int));
-    }
-    munmap(memory, sizeof(memory_t));
-    close(shmd);
-    V(sem);
-
-
-    while (1)
-    {
-        sem = open_semaphore("spy_simulation-sem");
-        P(sem);
-        shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-        memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-        
-        if (count != memory->count)
-        {
-            count = memory->count;
-            t = (pthread_t *)malloc(sizeof(pthread_t) * SPIES_NUMBER);
-            args = (args_spy *)malloc(sizeof(args_spy) * SPIES_NUMBER);
-            for (i = 0; i < SPIES_NUMBER; i++)
-            {
-                args[i].spie_index = i;
-                args[i].memory = memory;
-            }
-
-            for (i = 0; i < SPIES_NUMBER; i++)
-            {
-                pthread_create(&t[i], NULL, spie_routine, &args[i]);
-            }
-
-            for (i = 0; i < SPIES_NUMBER; i++)
-            {
-                pthread_join(t[i], NULL);
-            }
-        }
-        munmap(memory, sizeof(memory_t));
-        close(shmd);
-        V(sem);
-    }
-    return 0;
-}

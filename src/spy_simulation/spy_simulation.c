@@ -11,15 +11,6 @@
 #include "functions.h"
 #include "mesh_surveillance_network.h"
 
-memory_t * create_memory() {
-    memory_t * memory = (memory_t *) malloc(sizeof(memory_t));
-    create_map(memory);
-    create_mailbox(memory);
-    create_characters(memory);
-    memory->count = 0;
-    return memory;
-}
-
 void create_map(memory_t * memory) {
     int nb_companies = 0;
     int nb_residential_buildings = 0;
@@ -276,7 +267,6 @@ void signal_handler(int signum) {
     switch (signum) {
         case SIGALRM:
             new_round();
-           printf("signal SIGALRM\n");
             break;
         case SIGTERM:
             //printf("signal SIGTERM\n");
@@ -358,12 +348,13 @@ character_t * get_characters(memory_t * memory) {
 void new_round() {
     memory_t * memory; 
     sem_t *sem;
-    sem = open_semaphore("spy_simulation-sem");
+    sem = create_and_open_semaphore("spy_simulation-sem");
     
     P(sem);
     int shmd = shm_open("/spy_simulation", O_CREAT | O_RDWR, (mode_t)0600);
     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd,0);
     memory->count += 1;
+    printf("round n°%d\n", memory->count);
     memory->memory_has_changed = 1;
     mesh_surveillance_network(memory);
 

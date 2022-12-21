@@ -39,5 +39,5 @@ int main(void)
        // pause();
         set_signal_handler();
     }
-    return 0;
+
 }
