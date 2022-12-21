@@ -276,13 +276,13 @@ void signal_handler(int signum) {
     switch (signum) {
         case SIGALRM:
             new_round();
-            printf("signal SIGALRM\n");
+           printf("signal SIGALRM\n");
             break;
         case SIGTERM:
-            printf("signal SIGTERM\n");
+            //printf("signal SIGTERM\n");
             break;
          case SIGINT:
-            printf("signal SIGINT\n");
+            //printf("signal SIGINT\n");
             exit(0);
         default:
             break;
@@ -362,17 +362,7 @@ void new_round() {
     
     P(sem);
     int shmd = shm_open("/spy_simulation", O_CREAT | O_RDWR, (mode_t)0600);
-    if(shmd == -1) {
-        perror("shmd failed");
-    }
-    if(ftruncate(shmd, sizeof(memory_t)) == -1) {
-        perror("shmd truncate failed");
-    }
     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd,0);
-    if (memory == MAP_FAILED) {
-        perror("mmap failed");
-    }
-
     memory->count += 1;
     memory->memory_has_changed = 1;
     mesh_surveillance_network(memory);

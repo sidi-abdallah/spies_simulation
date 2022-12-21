@@ -19,7 +19,6 @@
 #define CELL_H
 
 #include "common.h"
-
 /**
  * \file cell.h
  *

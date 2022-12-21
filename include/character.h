@@ -2,6 +2,7 @@
 #define CHARACTER_H
 
 #include "common.h"
+#include "cell.h"
 
 enum character_type_e {
     CITIZEN,
@@ -55,7 +56,19 @@ struct spie_s {
     int home_column;
     int nb_of_stolen_companies;
     int has_license_to_kill;
+    int round_number_before_stole;
+    int rand_time_for_stoling;  
+    int rand_day_routine;
+    int index_company_being_stolen;
+    int shopping; 
+    int stay_at_home;
+    int stroll_in_city;
+    int hour;
+    int random_supermarket;
+    int * companies_stolen_yet;
+    company_type_t message_importance;
     char stolen_message_content[MAX_LENGTH_OF_MESSAGE];
+    int walking_to_put_fake_msg;
 };
 
 struct case_officer_s {
