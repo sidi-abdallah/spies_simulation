@@ -63,6 +63,7 @@ struct spie_s {
     int shopping; 
     int stay_at_home;
     int stroll_in_city;
+    int is_stolling;
     int hour;
     int random_supermarket;
     int * companies_stolen_yet;

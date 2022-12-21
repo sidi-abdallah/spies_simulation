@@ -42,7 +42,7 @@ void sent_sig(void) {
     
     pid_spy_simulation = get_pids_processes();
     
-    for(int round = 0; round < 200; round++) {
+    for(int round = 0; round < 300; round++) {
        //if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
        /*else*/ 
        // printf("%d\n", round);

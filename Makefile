@@ -118,7 +118,7 @@ clean:
 	rm -f src/monitor/*.o src/common/*.o src/spy_simulation/*.o src/citizen_manager/*.o src/timer/*.o
 
 distclean: clean
-	rm -f bin/*
+	rm -f bin/* 
 
 clean_sem :
 	rm -f /dev/shm/*
