@@ -70,7 +70,7 @@ src/timer/timer.o : src/timer/timer.c include/timer.h
 
 
 # ----------------------------------------------------------------------------
-# TIMER
+# ENEMY SPY NETWORK
 # ----------------------------------------------------------------------------
 
 bin/enemy_spy_network : src/enemy_spy_network_new/spies.o \
@@ -114,10 +114,10 @@ src/common/functions.o : src/common/functions.c include/functions.h
 # CLEANING
 # ----------------------------------------------------------------------------
 clean:
-	rm src/monitor/*.o src/common/*.o
+	rm src/monitor/*.o src/common/*.o /dev/shm/spy_simulation /dev/shm/sem.spy_simulation-sem
 
 distclean: clean
-	rm bin/monitor
+	rm bin/monitor 
 
 clean_sem :
 	rm -f /dev/shm/*

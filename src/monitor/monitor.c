@@ -308,6 +308,9 @@ void display_spy_information(WINDOW *window, memory_t *mem, int row, int column,
     int home_column;
     int nb_of_stolen_companies;
     int has_license_to_kill;
+    int shopping;
+    int stroll_in_city;
+    int is_stolling;
     char stolen_message_content[MAX_LENGTH_OF_MESSAGE];
 
     id                     = mem->spies[number].id;
@@ -318,6 +321,9 @@ void display_spy_information(WINDOW *window, memory_t *mem, int row, int column,
     home_column            = mem->spies[number].home_column;
     nb_of_stolen_companies = mem->spies[number].nb_of_stolen_companies;
     has_license_to_kill    = mem->spies[number].has_license_to_kill;
+    shopping = mem->spies[number].shopping;
+    stroll_in_city = mem->spies[number].stroll_in_city;
+    is_stolling = mem->spies[number].is_stolling;
     strcpy(stolen_message_content, "bla bla bla");	
    /* ---------------------------------------------------------------------- */
 
@@ -339,6 +345,11 @@ void display_spy_information(WINDOW *window, memory_t *mem, int row, int column,
     } else {
         mvwaddstr(window, row + 7, column, "  License to kill: no ");
     }
+    
+    if(shopping) mvwprintw(window, row + 8, column, "  Current activity: shopping");
+    else if(is_stolling) mvwprintw(window, row + 8, column, "  Current activity: stealing");
+    else if(stroll_in_city) mvwprintw(window, row + 8, column, "  Current activity: strolling");
+    else mvwprintw(window, row + 8, column, "  Current activity: at  home ");
     wrefresh(window);
 }
 
