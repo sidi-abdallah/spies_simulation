@@ -290,30 +290,38 @@ void signal_handler(int signum) {
 }
 
 void mesh_surveillance_network(memory_t * memory, character_t characters[NUMBER_OF_CHARACTERS-1]) {
-    int i, j, u, v, company_near;
+    int i, j, u, v, company_near, working;
 
     for(i=0; i<NUMBER_OF_CHARACTERS-1; i++) {
         company_near = 0;
-        for(u=characters[i].row -1; u <= characters[i].row +1; i++) {
-            for(v=characters[i].column -1; v <= characters[i].column +1; i++) {
-                if(u >= 0 && u < MAX_ROWS && v >= 0 && v < MAX_COLUMNS) {
-                    for(j = 0; j<MAX_COMPANIES; j++) {
-                        if(u == memory->companies[j].row && v == memory->companies[j].column) {
-                            company_near = 1;
+        working = 0;
+
+        for(j = 0; j<MAX_COMPANIES; j++) {
+            if(characters[i].row == memory->companies[j].row && characters[i].column == memory->companies[j].column) {
+                working = 1;
+            }
+        }
+        //If not working in a company
+        if(!working) {
+            for(u=characters[i].row -1; u <= characters[i].row +1; i++) {
+                for(v=characters[i].column -1; v <= characters[i].column +1; i++) {
+                    if(u >= 0 && u < MAX_ROWS && v >= 0 && v < MAX_COLUMNS) {
+                        for(j = 0; j<MAX_COMPANIES; j++) {
+                            if(u == memory->companies[j].row && v == memory->companies[j].column) {
+                                company_near = 1;
+                            }
                         }
                     }
                 }
             }
-        }
-
-        //If character is near of a company
-        if(company_near) {
-            memory->mesh_surveillance_network.near_company[characters[i].id] += 1;
-            //If he is near a company for 10 rounds
-            if(memory->mesh_surveillance_network.near_company[characters[i].id] > 10) {
-                mkfifo("mesh_surveillance_network", 0666);
-                fd = open("mesh_surveillance_network", O_WRONLY);
-                //TUBE NOMMÉ ENVOYER id + localisation
+            //If character is near of a company
+            if(company_near) {
+                memory->mesh_surveillance_network.near_company[characters[i].id] += 1;
+                //If he is near a company for 10 rounds, send a SIGALARM
+                if(memory->mesh_surveillance_network.near_company[characters[i].id] >= NUMBER_SUSPICIOUS_ROUND) {
+                    memory->mesh_surveillance_network.id_suspicious_character = characters[i].id;
+                    kill(memory->counter_intelligence_officer_pid, SIGALRM);
+                }
             }
         }
     }

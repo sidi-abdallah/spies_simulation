@@ -59,8 +59,8 @@
   * ---------------------------------------------------------------------------
  */
 #define MAX_JOBS_TYPES           3   /*!< Maximum number of types of jobs*/
-#define MAX_AFFECTED_CITY_HALL   10
-#define MAX_AFFECTED_SUPERMARKET 3
+#define MAX_AFFECTED_CITY_HALL   10  /*!< Maximum number of affected citizens to a job at the city hall*/
+#define MAX_AFFECTED_SUPERMARKET 3   /*!< Maximum number of affected citizens to a job at the supermarket*/
 
 /*
  * ---------------------------------------------------------------------------
@@ -91,7 +91,7 @@
  * Constants associated with the characters
   * ---------------------------------------------------------------------------
  */
-#define NUMBER_OF_CHARACTERS 132
+#define NUMBER_OF_CHARACTERS 132 /*!< Total number of characters in the simulation*/
 #define NUMBER_OF_CITIZENS   127 /*!< Number of normal citizens in the simulation*/
 #define NUMBER_OF_SPIES      3   /*!< Number of spies in the simulation*/
 #define MAX_LIFE_POINTS      10  /*!< Maximum number of life points for a character*/
@@ -101,8 +101,8 @@
  * Constants associated with the timer
   * ---------------------------------------------------------------------------
  */
-#define ROUND_NUMBER        2016
-#define DEFAULT_SPAN_ROUND  100000
+#define ROUND_NUMBER        2016   /*!< Total number of rounds in the simulation*/
+#define DEFAULT_SPAN_ROUND  100000 /*!< Time of a round in the simulation*/
 
 /*
  * ---------------------------------------------------------------------------
@@ -117,5 +117,12 @@
 #define EMPTY         "EMPTY"
 #define STOLEN        "STOLEN"
 #define NOT_FOUND     "NOT_FOUND"
+
+/*
+ * ---------------------------------------------------------------------------
+ * Constants associated with the meshed surveillance network.
+ * ---------------------------------------------------------------------------
+ */
+#define NUMBER_SUSPICIOUS_ROUND 6 /*!< Number of round near a company for a character to get suspicious.*/
 
 #endif /* COMMON_H */

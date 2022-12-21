@@ -74,6 +74,7 @@ struct memory_s {
 
     pid_t spy_simulation_pid;
     pid_t citzen_manager_pid;
+    pid_t counter_intelligence_officer_pid;
     int count;
 };
 
