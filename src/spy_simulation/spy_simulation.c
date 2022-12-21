@@ -377,6 +377,7 @@ void set_companies_informations(memory_t * memory) {
 
     for(i=0; i<MAX_COMPANIES; i++) {
         random_importance = rand()%MAX_COMPANY_TYPES;
+        memory->companies[i].type = random_importance;
         switch(random_importance) {
             case CRUTIAL : 
                 if(memory->companies[i].affected_characters > COMPANY_CRUCIAL_EMPLOYEES) {

@@ -42,7 +42,7 @@ enum cell_type_e {
     SUPERMARKET           /*!< A cell that contains a supermarket. */
 };
 
-enum company_importance_e {
+enum company_type_e {
     CRUTIAL,
     STRONG,
     MEDIUM,
@@ -51,7 +51,7 @@ enum company_importance_e {
 };
 
 typedef enum cell_type_e cell_type_t;
-typedef enum company_importance_e company_importance_t;
+typedef enum company_type_e company_type_t;
 typedef struct cell_s cell_t;
 typedef struct mailbox_s mailbox_t;
 typedef struct company_s company_t;
@@ -81,6 +81,7 @@ struct company_s {
     int affected_characters;
     int number_informations;
     char **informations;
+    company_type_t type;
 };
 
 struct city_hall_s {

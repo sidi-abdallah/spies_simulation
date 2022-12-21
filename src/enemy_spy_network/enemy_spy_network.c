@@ -14,6 +14,7 @@
 #include "functions.h"
 #include "memory.h"
 #include "cell.h"
+
 //#include "citizen_manager.h"
 typedef struct args_spy {
     memory_t *memory;
