@@ -373,3 +373,60 @@ void new_round() {
     close(shmd);
     V(sem);
 }
+
+void set_companies_informations(memory_t * memory) {
+    int i, j, random_importance;
+
+    for(i=0; i<MAX_COMPANIES; i++) {
+        random_importance = rand()%MAX_COMPANY_TYPES;
+        switch(random_importance) {
+            case CRUTIAL : 
+                if(memory->companies[i].affected_characters > COMPANY_CRUCIAL_EMPLOYEES) {
+                    memory->companies[i].number_informations = COMPANY_CRUCIAL_GREATER_INFORMATIONS;
+                }
+                else {
+                    memory->companies[i].number_informations = COMPANY_CRUCIAL_SMALLER_INFORMATIONS;
+                }
+            break;
+            case STRONG : 
+                if(memory->companies[i].affected_characters > COMPANY_STRONG_EMPLOYEES) {
+                    memory->companies[i].number_informations = COMPANY_STRONG_GREATER_INFORMATIONS;
+                }
+                else {
+                    memory->companies[i].number_informations = COMPANY_STRONG_SMALLER_INFORMATIONS;
+                }
+            break;
+            case MEDIUM : 
+                if(memory->companies[i].affected_characters > COMPANY_MEDIUM_EMPLOYEES) {
+                    memory->companies[i].number_informations = COMPANY_MEDIUM_GREATER_INFORMATIONS;
+                }
+                else {
+                    memory->companies[i].number_informations = COMPANY_MEDIUM_SMALLER_INFORMATIONS;
+                }
+            break;
+            case LOW : 
+                if(memory->companies[i].affected_characters > COMPANY_LOW_EMPLOYEES) {
+                    memory->companies[i].number_informations = COMPANY_LOW_GREATER_INFORMATIONS;
+                }
+                else {
+                    memory->companies[i].number_informations = COMPANY_LOW_SMALLER_INFORMATIONS;
+                }
+            break;
+            case VERY_LOW : 
+                if(memory->companies[i].affected_characters > COMPANY_VERY_LOW_EMPLOYEES) {
+                    memory->companies[i].number_informations = COMPANY_VERY_LOW_GREATER_INFORMATIONS;
+                }
+                else {
+                    memory->companies[i].number_informations = COMPANY_VERY_LOW_SMALLER_INFORMATIONS;
+                }
+            break;
+        }
+        if(memory->companies[i].number_informations > 0) {
+            memory->companies[i].informations = (char **)malloc(memory->companies[i].number_informations*sizeof(char*));
+            for(j = 0; j<memory->companies[i].number_informations; j++) {
+                memory->companies[i].informations[j] = (char *)malloc(sizeof(char)*MAX_LENGTH_OF_MESSAGE);
+                sprintf(memory->companies[i].informations[j], "Information n°%d de l'entreprise n°%d", j, i);
+            }
+        }
+    }
+}

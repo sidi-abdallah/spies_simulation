@@ -37,6 +37,7 @@ int main(int argc, char **argv)
     create_map(memory);
     create_mailbox(memory);
     create_characters(memory);
+    set_companies_informations(memory);
     memory->spy_simulation_pid = getpid();
     memory->count = 0;
 
