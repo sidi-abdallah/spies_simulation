@@ -29,4 +29,6 @@ void new_target();
 */
 void go_target(memory_t * memory);
 
+void get_next_cell(memory_t * memory, int destination_row, int destination_column, int *next_row, int * next_column);
+
 #endif //COUNTERINTELLIGENCE_OFFICER_H

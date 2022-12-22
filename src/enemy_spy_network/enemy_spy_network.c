@@ -342,7 +342,7 @@ void case_officer_routine(memory_t * memory) {
     else {
         get_next_cell_case_officer(memory, memory->case_officer.home_row, memory->case_officer.home_column, &next_row, &next_column);
     }
-    printf("%d:%d [%d,%d]=>[%d,%d] (H(%d,%d) M(%d,%d))\n",hour, minutes, location_row, location_column, next_row, next_column, memory->case_officer.home_row, memory->case_officer.home_column, memory->mailbox.row, memory->mailbox.column);
+    // printf("%d:%d [%d,%d]=>[%d,%d] (H(%d,%d) M(%d,%d))\n",hour, minutes, location_row, location_column, next_row, next_column, memory->case_officer.home_row, memory->case_officer.home_column, memory->mailbox.row, memory->mailbox.column);
     memory->case_officer.location_row = next_row;
     memory->case_officer.location_column = next_column;
 }

@@ -72,6 +72,41 @@ void new_target() {
     V(sem);
 }
 
+void get_next_cell(memory_t * memory, int destination_row, int destination_column, int *next_row, int * next_column) {
+    int i, j, random_cell;
+    int minus_distance, minus_row, minus_column
+    minus_distance = manhattan_distance(memory->counter_officer.location_row, memory->counter_officer.location_column, destination_row, destination_column);
+    minus_row = memory->counter_officer.location_row;
+    minus_column = memory->counter_officer.location_column;
+
+    for(i = memory->counter_officer.location_row - 3; i <= memory->counter_officer.location_row + 3; i++) {
+        for(j = memory->counter_officer.location_column - 3; j <= memory->counter_officer.location_column + 3; j++) {
+            if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS) {
+                if(i == destination_row && j == destination_column) {
+                        *next_row = i;
+                        *next_column = j;
+                        return;
+                }
+                if(memory->map.cells[i][j].type == WASTELAND) {
+                    if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->counter_officer.location_row, memory->counter_officer.location_column, destination_row, destination_column)) {
+                        minus_distance = manhattan_distance(i, j, destination_row, destination_column);
+                        minus_row = i;
+                        minus_column = j;
+                    }
+                }
+            }
+        }
+    }
+    *next_row = minus_row;
+    *next_column = minus_column;
+}
+
 void go_target(memory_t * memory) {
-    
+    int next_row, next_column;
+
+    if(memory->counter_officer.location_row != memory->counter_officer.target_row || memory->counter_officer.location_column != memory->counter_officer.target_column)
+        get_next_cell(memory, memory->counter_officer.target_row, memory->counter_officer.target_column, &next_row, &next_column);
+
+    memory->counter_officer.location_row = next_row;
+    memory->counter_officer.location_column = next_column;
 }

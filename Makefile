@@ -131,11 +131,7 @@ src/common/functions.o : src/common/functions.c include/functions.h
 # CLEANING
 # ----------------------------------------------------------------------------
 clean:
-	rm -f src/monitor/*.o src/common/*.o src/spy_simulation/*.o src/citizen_manager/*.o src/timer/*.o
+	rm -f src/monitor/*.o src/common/*.o src/spy_simulation/*.o src/citizen_manager/*.o src/timer/*.o src/counterintelligence_officer/*.o src/enemy_spy_network/*.o
 
 distclean: clean
 	rm -f bin/* 
-
-clean_sem :
-	rm -f /dev/shm/*
-
