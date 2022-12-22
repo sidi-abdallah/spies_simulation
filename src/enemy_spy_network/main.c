@@ -28,6 +28,8 @@ int main(void) {
     P(sem);
     shmd = shm_open("/spy_simulation", O_RDWR, 0666);
     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
+
+    //Initialize spies
     for(int spie_index = 0; spie_index < SPIES_NUMBER; spie_index++) {
         memory->spies[spie_index].rand_time_for_stoling = 0;
         memory->spies[spie_index].round_number_before_stole = 0;
@@ -40,6 +42,15 @@ int main(void) {
         memory->spies[spie_index].hour = get_hour(memory);
         memory->spies[spie_index].companies_stolen_yet = (int*)calloc(MAX_COMPANIES, sizeof(int));
     }
+    //Initialize case_officer
+    memory->case_officer.outing_mailbox_1 = create_time(8,0);
+    memory->case_officer.outing_mailbox_2 = create_time(12,0);
+    memory->case_officer.outing_supermarket = create_time(17,0);
+    memory->case_officer.send_messages = create_time(22,0);
+    memory->case_officer.random_supermarket = 0;
+    memory->case_officer.going_to_mailbox = 0;
+    memory->case_officer.going_to_supermarket = 0;
+
     munmap(memory, sizeof(memory_t));
     close(shmd);
     V(sem);
@@ -52,11 +63,21 @@ int main(void) {
     
     if(fork() == 0) {
         if(fork() == 0) {
-            memory->spies_pid[2] = getpid();
-            munmap(memory, sizeof(memory_t));
-            close(shmd);
-            V(sem);
-            main_spy(2);
+            if(fork() == 0) {
+                memory->case_officer_pid = getpid();
+                munmap(memory, sizeof(memory_t));
+                close(shmd);
+                V(sem);
+                main_case_officer();
+            }
+            else {
+                memory->spies_pid[2] = getpid();
+                munmap(memory, sizeof(memory_t));
+                close(shmd);
+                V(sem);
+                main_spy(2);
+                wait(NULL);
+            }
         }
         else {
             memory->spies_pid[1] = getpid();

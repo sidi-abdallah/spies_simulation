@@ -114,6 +114,9 @@ void create_mailbox(memory_t * memory) {
     memory->mailbox.row = memory->residential_buildings[random_building].row;
     memory->mailbox.column = memory->residential_buildings[random_building].column;
     memory->residential_buildings[random_building].affected_characters += 1;
+    memory->mailbox.number_of_messages = 0;
+    memory->mailbox.messages = NULL;
+    memory->mailbox.occupied = 0;
 }
 
 void create_characters(memory_t * memory) {

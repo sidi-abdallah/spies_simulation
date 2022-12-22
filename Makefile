@@ -14,10 +14,7 @@ endif
 
 .PHONY: all clean distclean
 
-all: bin/main bin/spy_simulation bin/timer bin/monitor bin/citizen_manager bin/enemy_spy_network
-
-bin/main : src/main.c
-	$(CC) $^ -o $@ $(LDFLAGS)
+all: bin/spy_simulation bin/timer bin/monitor bin/citizen_manager bin/enemy_spy_network
 	
 # ----------------------------------------------------------------------------
 # MONITOR

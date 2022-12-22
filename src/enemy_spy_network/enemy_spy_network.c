@@ -163,7 +163,6 @@ void day_routine(memory_t *memory, int spie_index) {
         //printf("pos actual of %ld :(%d,%d)\n",pthread_self(), memory->spies[spie_index].location_row, memory->spies[spie_index].location_column);
 }
 
-
 void spie_routine(memory_t *memory, int spie_index) {
     int hour = get_hour(memory);
     //printf("%d\n",hour);
@@ -225,8 +224,143 @@ void main_spy(int index) {
     }
 }
 
+void main_case_officer() {
+    int shmd;
+    sem_t *sem;
+    memory_t *memory;
 
+    int count = 0;
+    while(1) {
+        sem = open_semaphore("spy_simulation-sem");
+        P(sem);
+        shmd = shm_open("/spy_simulation", O_RDWR, 0666);
+        memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
 
+        if (count != memory->count) {
+            count = memory->count;
+            case_officer_routine(memory);
+        }
+        munmap(memory, sizeof(memory_t));
+        close(shmd);
+        V(sem);
+    }
+}
+
+void case_officer_routine(memory_t * memory) {
+    int hour = get_hour(memory);
+    int minutes =get_minutes(memory);
+    int next_row, next_column;
+
+    if(hour == 0 && minutes == 0) { //Initialize times to go out
+    }
+
+    int hour_outing_mailbox1 = memory->case_officer.outing_mailbox_1.hour;
+    int minutes_outing_mailbox1 = memory->case_officer.outing_mailbox_1.minutes;
+    int hour_outing_mailbox2 = memory->case_officer.outing_mailbox_2.hour;
+    int minutes_outing_mailbox2 = memory->case_officer.outing_mailbox_2.minutes;
+    int hour_outing_supermarket = memory->case_officer.outing_supermarket.hour;
+    int minutes_outing_supermarket = memory->case_officer.outing_supermarket.minutes;
+    int random_supermarket = memory->case_officer.random_supermarket;
+
+    int location_row = memory->case_officer.location_row;
+    int location_column = memory->case_officer.location_column;
+    int supermarket_row = memory->supermarkets[random_supermarket].row;
+    int supermarket_column = memory->supermarkets[random_supermarket].column;
+
+    if(hour >= 8 && hour < 17) {
+        if((hour == hour_outing_mailbox1 && minutes == minutes_outing_mailbox1) || (hour == hour_outing_mailbox2 && minutes == minutes_outing_mailbox2)) { //Time to go to mailbox
+            memory->case_officer.going_to_mailbox = 1;
+        }
+        if(memory->case_officer.going_to_mailbox == 1) { //Need to go to mailbox
+            get_next_cell_case_officer(memory, memory->mailbox.row, memory->mailbox.column, &next_row, &next_column);
+        }
+        if(memory->mailbox.occupied == 1) { //Mailbox occupied
+            next_row = location_row; //Stay at the same cell
+            next_column = location_column;
+        }
+        if(location_row == memory->mailbox.row && location_column == memory->mailbox.column) { //At mailbox
+            memory->case_officer.going_to_mailbox = 0;
+            //case_officer_get_message(memory);
+        } 
+        if(memory->case_officer.going_to_mailbox == 0) { //Need to go home
+            get_next_cell_case_officer(memory, memory->case_officer.home_row, memory->case_officer.home_column, &next_row, &next_column);
+        }
+    }
+    else if(hour >= 17 && hour < 19) {
+        if(hour == hour_outing_supermarket && minutes == minutes_outing_supermarket) {
+            memory->case_officer.going_to_supermarket = 1;
+        }
+        if(memory->case_officer.going_to_supermarket == 1) { //Need to go to supermarket
+            get_next_cell_case_officer(memory, supermarket_row, supermarket_column, &next_row, &next_column);
+        }
+        if(location_row == supermarket_row && location_column == supermarket_column) { //At supermarket
+            memory->case_officer.going_to_supermarket = 0;
+        }
+        if(memory->case_officer.going_to_supermarket == 0) { //Been at supermarket, need to go home
+            get_next_cell_case_officer(memory, memory->case_officer.home_row, memory->case_officer.home_column, &next_row, &next_column);
+        }
+    }
+    else if(hour >= 22 && (hour < 23 || (hour == 23 && minutes <= 50))) {
+        next_row = location_row;
+        next_column = location_column;
+        if(hour == memory->case_officer.send_messages.hour && minutes == memory->case_officer.send_messages.minutes){ //Time to send messages
+
+        }
+    }
+    else {
+        get_next_cell_case_officer(memory, memory->case_officer.home_row, memory->case_officer.home_column, &next_row, &next_column);
+    }
+    // printf("%d:%d [%d,%d]=>[%d,%d] (H(%d,%d) M(%d,%d))\n",hour, minutes, location_row, location_column, next_row, next_column, memory->case_officer.home_row, memory->case_officer.home_column, memory->mailbox.row, memory->mailbox.column);
+    memory->case_officer.location_row = next_row;
+    memory->case_officer.location_column = next_column;
+}
+
+void get_next_cell_case_officer(memory_t *memory, int destination_row, int destination_column, int * next_row, int * next_column) {
+    int i, j, random_cell;
+    int count_reachable_cells = 0;
+    int reachable_cells_row[8];
+    int reachable_cells_column [8];
+    
+    for(i = memory->case_officer.location_row - 1; i <= memory->case_officer.location_row + 1; i++) {
+        for(j = memory->case_officer.location_column - 1; j <= memory->case_officer.location_column + 1; j++) {
+            if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS) {
+                if(i == destination_row && j == destination_column) {
+                        *next_row = i;
+                        *next_column = j;
+                        return;
+                }
+                if(memory->map.cells[i][j].type == WASTELAND) {
+                    if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->case_officer.location_row, memory->case_officer.location_column, destination_row, destination_column)) {
+                        reachable_cells_row[count_reachable_cells] = i;
+                        reachable_cells_column[count_reachable_cells] = j;
+                        count_reachable_cells += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    if(count_reachable_cells == 0) {
+        for(i = memory->case_officer.location_row - 1; i <= memory->case_officer.location_row + 1; i++) {
+            for(j = memory->case_officer.location_column - 1; j <= memory->case_officer.location_column + 1; j++) {
+                if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS && memory->map.cells[i][j].type == WASTELAND) {
+                    *next_row = i;
+                    *next_column = j;
+                    return;
+                }
+            }
+        } 
+    } 
+    else {
+        random_cell = rand()%count_reachable_cells;
+        *next_row = reachable_cells_row[random_cell];
+        *next_column = reachable_cells_column[random_cell];
+    }
+}
+
+void case_officer_get_message(memory_t *memory) {
+
+}
 
 // // int * available_companies = calloc(MAX_COMPANIES, sizeof(int));
 // int available_companies[MAX_COMPANIES] = {0};

@@ -100,9 +100,9 @@ struct supermarket_s {
 struct mailbox_s {
     int row;     /*!< Row of the mailbox. */
     int column;  /*!< Column of the mailbox. */
-    /**
-     * liste de messages
-    */
+    int number_of_messages;
+    char **messages;
+    int occupied;
 };
 
 #endif /* CELL_H */

@@ -19,4 +19,12 @@ void spie_routine(memory_t *memory, int spie_index);
 
 void main_spy(int index);
 
+void main_case_officer();
+
+void case_officer_routine(memory_t * memory);
+
+void get_next_cell_case_officer(memory_t *memory, int destination_row, int destination_column, int * next_row, int * next_column);
+
+void case_officer_get_message(memory_t *memory);
+
 #endif //ENEMY_SPY_NETWORK_H

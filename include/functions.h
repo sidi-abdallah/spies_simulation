@@ -17,4 +17,7 @@ int get_hour(memory_t *memory);
  * \brief Calculate the current minutes in the current hour according to the number of rounds done.
  */
 int get_minutes(memory_t *memory);
+
+time1_t create_time(int hour, int minutes);
+
 #endif //FUNCTIONS_H

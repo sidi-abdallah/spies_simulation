@@ -4,6 +4,17 @@
 #include "common.h"
 #include "cell.h"
 
+/**
+ * \brief A given time.
+ */
+struct time1_s {
+    int hour;
+    int minutes;
+};
+
+typedef struct time1_s time1_t;
+
+
 enum character_type_e {
     CITIZEN,
     SPY,
@@ -79,6 +90,15 @@ struct case_officer_s {
     int location_column;
     int home_row;
     int home_column;
+    time1_t outing_mailbox_1;
+    time1_t outing_mailbox_2;
+    time1_t outing_supermarket;
+    time1_t send_messages;
+    int random_supermarket;
+    int going_to_mailbox;
+    int going_to_supermarket;
+    int number_of_messages;
+    char **messages;
 };
 
 struct counter_officer_s {

@@ -15,3 +15,10 @@ int get_hour(memory_t *memory) {
 int get_minutes(memory_t *memory) {
     return (memory->count * 10)%60;
 }
+
+time1_t create_time(int hour, int minutes) {
+    time1_t res;
+    res.hour = hour;
+    res.minutes = minutes;
+    return res;
+}
