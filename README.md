@@ -10,6 +10,7 @@
 
 Run the following commands :
 > make distclean
+
 > make
 
 ## Run the program
