@@ -103,6 +103,8 @@ struct mailbox_s {
     int number_of_messages;
     char **messages;
     int occupied;
+    int index_of_next_msg;
+    char **informations;
 };
 
 #endif /* CELL_H */

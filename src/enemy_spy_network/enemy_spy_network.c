@@ -15,6 +15,10 @@
 #include "memory.h"
 #include "cell.h"
 #include "enemy_spy_network.h"
+#include "character.h"
+#include <string.h>
+
+
 
 void get_next_cell(memory_t *memory, int spie_index, int destination_row, int destination_column, int * next_row, int * next_column) {
     int i, j, random_cell;
@@ -24,45 +28,68 @@ void get_next_cell(memory_t *memory, int spie_index, int destination_row, int de
     
     for(i = memory->spies[spie_index].location_row - 1; i <= memory->spies[spie_index].location_row + 1; i++) {
         for(j = memory->spies[spie_index].location_column - 1; j <= memory->spies[spie_index].location_column + 1; j++) {
-            if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS) {
-                if(i == destination_row && j == destination_column) {
-                        *next_row = i;
-                        *next_column = j;
-                        return;
-                }
-                if(memory->map.cells[i][j].type == WASTELAND) {
-                    if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->spies[spie_index].location_row, memory->spies[spie_index].location_column, destination_row, destination_column)) {
-                        reachable_cells_row[count_reachable_cells] = i;
-                        reachable_cells_column[count_reachable_cells] = j;
-                        count_reachable_cells += 1;
-                    }
+            if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS ) {
+                if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->spies[spie_index].location_row, memory->spies[spie_index].location_column, destination_row, destination_column)) {
+                    reachable_cells_row[count_reachable_cells] = i;
+                    reachable_cells_column[count_reachable_cells] = j;
+                    count_reachable_cells += 1;
                 }
             }
         }
-    }
-
-    if(count_reachable_cells == 0) {
-        for(i = memory->spies[spie_index].location_row - 1; i <= memory->spies[spie_index].location_row + 1; i++) {
-            for(j = memory->spies[spie_index].location_column - 1; j <= memory->spies[spie_index].location_column + 1; j++) {
-                if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS && memory->map.cells[i][j].type == WASTELAND) {
-                    *next_row = i;
-                    *next_column = j;
-                    return;
-                }
-            }
-        } 
     } 
-    else {
-        random_cell = rand()%count_reachable_cells;
-        *next_row = reachable_cells_row[random_cell];
-        *next_column = reachable_cells_column[random_cell];
-    }
+    
+    random_cell = rand()%count_reachable_cells;
+    *next_row = reachable_cells_row[random_cell];
+    *next_column = reachable_cells_column[random_cell];
 }
 
+int get_msg_from_company(memory_t *memory, int spie_index, int probability_of_success) {
+    int next_row = 0, next_column = 0, decide_to_stole = rand()%100;
+    int rand_index_of_stolen_msg = rand()%memory->companies[memory->spies[spie_index].index_company_being_stolen].number_informations;
+    if(decide_to_stole < probability_of_success) {
+        memory->spies[spie_index].location_row = next_row;
+        memory->spies[spie_index].location_column = next_column;
+        memory->spies[spie_index].nb_of_stolen_companies++;
+      
+        strcpy(memory->spies[spie_index].stolen_message_content, memory->companies[memory->spies[spie_index].index_company_being_stolen].informations[rand_index_of_stolen_msg]);
+        int random_importance_msg = rand() % 100 + 1;
+        if(random_importance_msg == 1){
+            memory->spies[spie_index].message_importance = CRUTIAL;
+        }
+        else if(random_importance_msg > 1 && random_importance_msg <= 6){
+            memory->spies[spie_index].message_importance = STRONG;
+        }
+        else if(random_importance_msg > 6 && random_importance_msg <= 20){
+            memory->spies[spie_index].message_importance = MEDIUM;
+        }
+        else if(random_importance_msg > 20 && random_importance_msg <= 50){
+            memory->spies[spie_index].message_importance = LOW;
+        }
+        else{
+            memory->spies[spie_index].message_importance = VERY_LOW;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+
 void night_routine(memory_t *memory, int spie_index) {
+     switch(spie_index){
+        
+        case 1:
+            usleep(4000);
+            break;
+        case 2:
+            usleep(8000);
+            break;
+        default:
+            break;
+    }
+
     int company_row = 0, company_col = 0, next_row = 0, next_column = 0;
 
-    if(memory->spies[spie_index].round_number_before_stole == 0) {
+    if(memory->spies[spie_index].round_number_before_stole == 0 && ! memory->spies[spie_index].go_to_put_msg_in_mailbox) {
         memory->spies[spie_index].index_company_being_stolen  = rand()%MAX_COMPANIES;
         while(memory->spies[spie_index].companies_stolen_yet[memory->spies[spie_index].index_company_being_stolen]) {
             memory->spies[spie_index].index_company_being_stolen  = rand()%MAX_COMPANIES;
@@ -74,51 +101,79 @@ void night_routine(memory_t *memory, int spie_index) {
         company_row = memory->companies[memory->spies[spie_index].index_company_being_stolen].row;
         company_col = memory->companies[memory->spies[spie_index].index_company_being_stolen].column;
         get_next_cell(memory, spie_index, company_row, company_col, &next_row, &next_column);
-        if(next_row == company_row && next_column == company_col) {
+        if(memory->spies[spie_index].round_number_before_stole <= 12 && next_row == company_row && next_column == company_col) {
             if(memory->spies[spie_index].round_number_before_stole < 12) {
-                //printf("nombre de tours < 12 : %d\n", memory->spies[spie_index].round_number_before_stole);
+                memory->spies[spie_index].round_number_before_stole++;
+            
+            } else {
+                if(!get_msg_from_company(memory, spie_index, 86)) {
+
+                    get_next_cell(memory, spie_index, memory->mailbox.row, memory->mailbox.column, &next_row, &next_column);
+                    if(next_row == memory->mailbox.row && next_column == memory->mailbox.column) {
+            
+                            memory->spies[spie_index].location_row = next_row;
+                            memory->spies[spie_index].location_column = next_column;
+                            strcpy(memory->mailbox.informations[memory->mailbox.index_of_next_msg], memory->spies[spie_index].stolen_message_content);
+                            memory->spies[spie_index].go_to_put_msg_in_mailbox = 0;
+                            memory->mailbox.index_of_next_msg++;
+                    
+                    }
+                    else {
+                        memory->spies[spie_index].go_to_put_msg_in_mailbox = 1;
+                        memory->spies[spie_index].location_row = next_row;
+                        memory->spies[spie_index].location_column = next_column;
+                    }
+                }
+                else {  
+                     memory->spies[spie_index].go_to_put_msg_in_mailbox = 1;
+                }
                 memory->spies[spie_index].round_number_before_stole++;
             }
-            //  else if(round_number_before_stole == 12 || walking_to_put_fake_msg) {
-            //     int decide_to_stole = rand()%100;
-            //     if(decide_to_stole < 86) {
-            //         strcpy(memory->spies[spie_index].stolen_message_content, memory->companies[index_company_being_stolen].information);
-            //         int random_importance_msg = rand() % 100 + 1;
-            //         if(random_importance_msg == 1){
-            //             memory->spies[spie_index].message_importance = CRUTIAL;
-            //         }
-            //         else if(random_importance_msg > 1 && random_importance_msg <= 6){
-            //             memory->spies[spie_index].message_importance = STRONG;
-            //         }
-            //         else if(random_importance_msg > 6 && random_importance_msg <= 20){
-            //             memory->spies[spie_index].message_importance = MEDIUM;
-            //         }
-            //         else if(random_importance_msg > 20 && random_importance_msg <= 50){
-            //             memory->spies[spie_index].message_importance = LOW;
-            //         }
-            //         else{
-            //             memory->spies[spie_index].message_importance = VERY_LOW;
-            //         }
-            //     }
-                
-            //     else if(walking_to_put_fake_msg){
-            //         get_next_cell(memory, spie_index, memory->mailbox.row, memory->mailbox.column, &next_row, &next_column);
-            //         round_number_before_stole++;
-            //     }
-            //     else {
-            //         get_next_cell(memory, spie_index, memory->mailbox.row, memory->mailbox.column, &next_row, &next_column);
-            //         walking_to_put_fake_msg = 1;
-            //         round_number_before_stole++;
-            //     }
-            // }
+        } else if(memory->spies[spie_index].go_to_put_msg_in_mailbox && memory->spies[spie_index].round_number_before_stole > 12){
+     
+            get_next_cell(memory, spie_index, memory->mailbox.row, memory->mailbox.column, &next_row, &next_column);
+            if(next_row == memory->mailbox.row && next_column == memory->mailbox.column) {
+                   memory->spies[spie_index].location_row = next_row;
+                   memory->spies[spie_index].location_column = next_column;
+                   strcpy(memory->mailbox.informations[memory->mailbox.index_of_next_msg], memory->spies[spie_index].stolen_message_content);
+                   memory->spies[spie_index].go_to_put_msg_in_mailbox = 0;
+                   memory->mailbox.index_of_next_msg++;
+            }
             else {
-                //printf(" %d ont été effectué avant le vol\n", memory->spies[spie_index].round_number_before_stole);
-                memory->spies[spie_index].round_number_before_stole = 0;
+                memory->spies[spie_index].location_row = next_row;
+                memory->spies[spie_index].location_column = next_column;
+            }
+            memory->spies[spie_index].round_number_before_stole++;
+            
+        } else if(!memory->spies[spie_index].go_to_put_msg_in_mailbox && memory->spies[spie_index].round_number_before_stole > 12 && memory->spies[spie_index].round_number_before_stole < 19){
+        
+            get_next_cell(memory, spie_index, company_row, company_col, &next_row, &next_column);
+            if(next_row == company_row && next_column == company_col) {
+                memory->spies[spie_index].round_number_before_stole++;
+                if(!get_msg_from_company(memory, spie_index, 90)) {
+                    memory->spies[spie_index].round_number_before_stole = 0;
+                }  
+                else {
+                    memory->spies[spie_index].go_to_put_msg_in_mailbox = 1;
+                }
+            }
+            else {
+                memory->spies[spie_index].location_row = next_row;
+                memory->spies[spie_index].location_column = next_column;
+                memory->spies[spie_index].round_number_before_stole++;
             }
         }
         else {
-            memory->spies[spie_index].location_row = next_row;
-            memory->spies[spie_index].location_column = next_column;
+            if(memory->spies[spie_index].round_number_before_stole >=19)  {
+                memory->spies[spie_index].round_number_before_stole = 0;
+                memory->spies[spie_index].go_to_put_msg_in_mailbox = 0;
+
+            }
+            else {
+                memory->spies[spie_index].location_row = next_row;
+                memory->spies[spie_index].location_column = next_column;
+                memory->spies[spie_index].round_number_before_stole++;
+            }
         }
     }
 
@@ -132,8 +187,6 @@ void day_routine(memory_t *memory, int spie_index) {
         }
         if(memory->spies[spie_index].hour != hour ) {
             memory->spies[spie_index].hour = hour;
-           // printf("spy new hour %d\n", hour);
-           // printf(" TID : %ld\n", pthread_self());
             memory->spies[spie_index].rand_day_routine = rand()%100;
             memory->spies[spie_index].shopping = 0;
             memory->spies[spie_index].stroll_in_city = 0;
@@ -165,8 +218,6 @@ void day_routine(memory_t *memory, int spie_index) {
                 memory->spies[spie_index].stroll_in_city = 1;
                 memory->spies[spie_index].stay_at_home = 0;
                 memory->spies[spie_index].shopping = 0;
-                //printf("spie se promene\n");
-                    //gestion de promenade ici (later).
             }
         }
         if(destination_row == memory->spies[spie_index].location_row && destination_col == memory->spies[spie_index].location_column) {
@@ -175,17 +226,19 @@ void day_routine(memory_t *memory, int spie_index) {
         }
         else {
             get_next_cell(memory, spie_index, destination_row, destination_col, &next_row, &next_column);
-            //printf("spy change position (%d, %d) \n", next_row, next_column);
 
         }
         memory->spies[spie_index].location_row = next_row;
         memory->spies[spie_index].location_column = next_column;
-        //printf("pos actual of %ld :(%d,%d)\n",pthread_self(), memory->spies[spie_index].location_row, memory->spies[spie_index].location_column);
 }
 
-void spie_routine(memory_t *memory, int spie_index) {
+
+void *spie_routine(void *args) {
+
+    args_spy * arguments = (args_spy *) args;
+    memory_t * memory = arguments->memory;
+    int spie_index = arguments->spie_index;
     int hour = get_hour(memory);
-    //printf("%d\n",hour);
 
     if(hour==17) {
         memory->spies[spie_index].rand_time_for_stoling  = (rand()%100) + 1;
@@ -198,13 +251,13 @@ void spie_routine(memory_t *memory, int spie_index) {
         memory->spies[spie_index].shopping = 0;
         memory->spies[spie_index].stroll_in_city = 0;
       //  printf(" spie entre 17h et 8h\n");
-        if(hour >= 17 && hour < 20 && memory->spies[spie_index].rand_time_for_stoling <= 100) {
+        if(hour >= 17 && hour < 20 && memory->spies[spie_index].rand_time_for_stoling <= 2) {
             night_routine(memory, spie_index);
         }
         if(hour >= 20 && hour <= 23 && memory->spies[spie_index].rand_time_for_stoling > 2 && memory->spies[spie_index].rand_time_for_stoling <= 12) {
             night_routine(memory, spie_index);
         }
-        if(hour <= 0 && hour > 3 && memory->spies[spie_index].rand_time_for_stoling > 12 && memory->spies[spie_index].rand_time_for_stoling <= 86) {
+        if(hour >= 0 && hour < 3 && memory->spies[spie_index].rand_time_for_stoling > 12 && memory->spies[spie_index].rand_time_for_stoling <= 86) {
             night_routine(memory, spie_index);
         }
         if(hour >= 3 && hour < 5 && memory->spies[spie_index].rand_time_for_stoling > 88 && memory->spies[spie_index].rand_time_for_stoling <= 98) {
@@ -218,15 +271,27 @@ void spie_routine(memory_t *memory, int spie_index) {
     //In the day between 8H and 17H
     } else {
         memory->spies[spie_index].is_stolling = 0;
-        //printf("spie entre 8h et 17h\n");
+        memory->spies[spie_index].round_number_before_stole = 0;
+        memory->spies[spie_index].go_to_put_msg_in_mailbox = 0;
         day_routine(memory, spie_index);
     }
+
+    //recuperation du contexteq
+    
+    arguments->memory = memory;
+    arguments->memory->memory_has_changed = 1;
+
+
+    return NULL;
 }
+
 
 void main_spy(int index) {
     int shmd;
     sem_t *sem;
     memory_t *memory;
+    args_spy * args = malloc(sizeof(args_spy));
+    args->spie_index = index;
 
     int count = 0;
     while(1) {
@@ -234,9 +299,9 @@ void main_spy(int index) {
         P(sem);
         shmd = shm_open("/spy_simulation", O_RDWR, 0666);
         memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-
+        args->memory = memory;
         if (count != memory->count) {
-            spie_routine(memory, index);
+            spie_routine(args);
         }
         munmap(memory, sizeof(memory_t));
         close(shmd);
@@ -402,192 +467,3 @@ void case_officer_get_message(memory_t *memory) {
     }
 }
 
-// // int * available_companies = calloc(MAX_COMPANIES, sizeof(int));
-// int available_companies[MAX_COMPANIES] = {0};
-
-// mailbox_t *get_pos_mailbox(void)
-// {
-//     sem_t *sem;
-//     memory_t *memory = malloc(sizeof(memory_t));
-//     mailbox_t *mailbox = (mailbox_t *)malloc(sizeof(mailbox_t));
-//     sem = open_semaphore("spy_simulation-sem");
-//     printf("get_pos_mailbox1\n");
-//     P(sem);
-//     printf("get_pos_mailbox2\n");
-//     int shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-//     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-//     *mailbox = memory->mailbox;
-//     munmap(memory, sizeof(memory_t));
-//     close(shmd);
-//     V(sem);
-//     return mailbox;
-// }
-
-
-
-// int get_round(void)
-// {
-//     sem_t *sem;
-//     int round;
-//     int shmd;
-//     memory_t *memory = malloc(sizeof(memory_t));
-//     sem = open_semaphore("spy_simulation-sem");
-//     P(sem);
-//     printf("hello_get_round\n");
-//     shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-//     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-//     round = memory->count;
-//     munmap(memory, sizeof(memory_t));
-//     close(shmd);
-//     V(sem);
-//     return round;
-// }
-
-// int chosen_company_index(void)
-// {
-//     int company_index = rand() % MAX_COMPANIES;
-//     company_t *company = (company_t *)malloc(sizeof(company_t));
-//     sem_t *sem;
-//     memory_t *memory = malloc(sizeof(memory_t));
-//     printf("chosen company index1\n");
-//     mailbox_t *mailbox = get_pos_mailbox();
-//     printf("chosen company index2\n");
-//     while (available_companies[company_index])
-//     {
-//         company_index = rand() % MAX_COMPANIES;
-//         sem = open_semaphore("spy_simulation-sem");
-//         P(sem);
-//         int shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-//         memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-//         *company = memory->companies[company_index];
-//         munmap(memory, sizeof(memory_t));
-//         close(shmd);
-//         V(sem);
-//         printf("chosen company index\n");
-//         if (manhattan_distance(mailbox->row, mailbox->column, company->row, company->column) <= 4)
-//         {
-//             available_companies[company_index] = 1;
-//             return company_index;
-//         }
-//     }
-//     return -1; // ne va jamais arriver (eviter le warning)
-// }
-
-// company_t *choose_company(void)
-// {
-//     sem_t *sem;
-//     company_t *company = (company_t *)malloc(sizeof(company_t));
-//     memory_t *memory = malloc(sizeof(memory_t));
-//     sem = open_semaphore("spy_simulation-sem");
-//     int index_company = chosen_company_index();
-//     P(sem);
-//     printf("in chose company1\n");
-//     int shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-//     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-//     printf("in chose company2\n");
-//     printf("%d\n", memory->companies[0].column);
-//     *company = memory->companies[index_company];
-//     printf("in chose company3\n");
-//     munmap(memory, sizeof(memory_t));
-//     close(shmd);
-//     V(sem);
-//     return company;
-// }
-
-// spie_t *get_spy(int spy_index)
-// {
-//     sem_t *sem;
-//     memory_t *memory = malloc(sizeof(memory_t));
-//     spie_t *spy = (spie_t *)malloc(sizeof(spie_t));
-//     sem = open_semaphore("spy_simulation-sem");
-//     P(sem);
-//     int shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-//     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-//     *spy = memory->spies[spy_index];
-//     munmap(memory, sizeof(memory_t));
-//     close(shmd);
-//     V(sem);
-//     return spy;
-// }
-
-// // double euclid_distance(int x1, int y1, int x2, int y2){
-// //     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-// // }
-
-// void change_pos_spie(int spy_index, int new_row, int new_column)
-// {
-//     sem_t *sem;
-//     sem = open_semaphore("spy_simulation-sem");
-//     memory_t *memory = malloc(sizeof(memory_t));
-//     P(sem);
-//     int shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-//     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-//     memory->spies[spy_index].memory->spies[spie_index].location_row = new_row;
-//     memory->spies[spy_index].memory->spies[spie_index].location_column = new_column;
-//     memory->memory_has_changed = 1;
-//     munmap(memory, sizeof(memory_t));
-//     close(shmd);
-//     V(sem);
-// }
-
-// void move_spy(int row_direction, int column_direction, int spy_index)
-// {
-//     int valid_cells_x[3];
-//     int valid_cells_y[3];
-//     int counter = 0;
-//     spie_t *spy = get_spy(spy_index);
-//     int random_valid_cell;
-//     for (int i = -1; i <= 1; ++i)
-//     {
-//         for (int j = -1; j <= 1; ++j)
-//         {
-//             // if(i == 0 && j ==0){
-//             //     continue;
-//             // }
-//             // printf("he");
-//             if (i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS && (i != 0 || j != 0))
-//             {
-
-//                 // if(manhatten_distance(row_direction, column_direction, spy->memory->spies[spie_index].location_row + i,  spy->memory->spies[spie_index].location_column + j) < manhattan_distance(row_direction, column_direction, spy->memory->spies[spie_index].location_row,  spy->memory->spies[spie_index].location_column)){
-//                 if ((row_direction - spy->memory->spies[spie_index].location_row) > (row_direction - (spy->memory->spies[spie_index].location_row + i)) || (column_direction - spy->memory->spies[spie_index].location_column) > (column_direction - (spy->memory->spies[spie_index].location_column + j)))
-//                 {
-//                     valid_cells_x[counter] = spy->memory->spies[spie_index].location_row + i;
-//                     valid_cells_y[counter] = spy->memory->spies[spie_index].location_column + j;
-//                     ++counter;
-//                 }
-//             }
-//         }
-//     }
-//     random_valid_cell = rand() % counter;
-//     change_pos_spie(spy_index, valid_cells_x[random_valid_cell], valid_cells_y[random_valid_cell]);
-// }
-
-// int is_adjacent_to_company(company_t *company, spie_t *spy)
-// {
-//     return (abs(spy->memory->spies[spie_index].location_row - company->row) <= 1 && abs(spy->memory->spies[spie_index].location_column - company->column) <= 1) ? 1 : 0;
-// }
-
-// // void tracking_before_stole(company_t *company, int spy_index) {
-// //     int counter = 0;
-
-// // }
-
-// void stole_information(int spy_index)
-// {
-//     printf("hello1\n");
-//     company_t *company = choose_company();
-//     printf("hello2\n");
-//     int last_round = get_round();
-//     printf("hello3\n");
-//     int current_round = last_round;
-//     printf("hello4\n");
-//     //  while(!is_adjacent_to_company(company, spy)) {
-//     printf("hello5\n");
-//     //    if(current_round == last_round + 1){
-//     printf("hello6\n");
-//     move_spy(company->row, company->column, spy_index);
-//     printf("hello7\n");
-//     //  }
-//     last_round = current_round;
-// }
-// // while(current_round != last_round + ROUND_NB_B    memory_t * memory = malloc(sizeof(memory_t));

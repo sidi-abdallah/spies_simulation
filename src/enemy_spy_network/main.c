@@ -38,7 +38,6 @@ int main(void) {
         memory->spies[spie_index].stay_at_home = 0;
         memory->spies[spie_index].rand_day_routine = 0;
         memory->spies[spie_index].random_supermarket = 0;
-        memory->spies[spie_index].walking_to_put_fake_msg = 0;
         memory->spies[spie_index].hour = get_hour(memory);
         memory->spies[spie_index].companies_stolen_yet = (int*)calloc(MAX_COMPANIES, sizeof(int));
     }

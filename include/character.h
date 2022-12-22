@@ -80,7 +80,7 @@ struct spie_s {
     int * companies_stolen_yet;
     company_type_t message_importance;
     char stolen_message_content[MAX_LENGTH_OF_MESSAGE];
-    int walking_to_put_fake_msg;
+    int go_to_put_msg_in_mailbox;
 };
 
 struct case_officer_s {

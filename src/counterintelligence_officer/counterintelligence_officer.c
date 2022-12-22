@@ -12,6 +12,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "functions.h"
 
 void set_signal_handler() {
     struct sigaction action;
@@ -73,8 +74,8 @@ void new_target() {
 }
 
 void get_next_cell(memory_t * memory, int destination_row, int destination_column, int *next_row, int * next_column) {
-    int i, j, random_cell;
-    int minus_distance, minus_row, minus_column
+    int i, j;
+    int minus_distance, minus_row, minus_column;
     minus_distance = manhattan_distance(memory->counter_officer.location_row, memory->counter_officer.location_column, destination_row, destination_column);
     minus_row = memory->counter_officer.location_row;
     minus_column = memory->counter_officer.location_column;

@@ -495,7 +495,6 @@ void display_enemy_country_monitor(WINDOW *window)
 {
     int nb_lines;
     int title_column;
-    char buffer[MAX_LENGTH_OF_MESSAGE];
     char *title = "ENEMY COUNTRY MONITOR";
 
     nb_lines = 1;

@@ -11,6 +11,11 @@
 #define ROUND_NB_BEFORE_STOLE 12
 #define ADJACENT_CASES_NUMBER 8
 
+typedef struct args_spy {
+    memory_t *memory;
+    int spie_index;
+} args_spy;
+
 /**
  * @brief Calculate the next cell for a given spy according to his current location and his destination.
 */
@@ -29,7 +34,7 @@ void night_routine(memory_t *memory, int spie_index);
 /**
  * @brief Perform the routine of a given spy.
 */
-void spie_routine(memory_t *memory, int spie_index);
+void * spie_routine(void *args);
 
 /**
  * @brief Perform the main process for a given spy.

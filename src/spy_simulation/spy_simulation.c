@@ -118,6 +118,12 @@ void create_mailbox(memory_t * memory) {
     memory->mailbox.number_of_messages = 0;
     memory->mailbox.messages = NULL;
     memory->mailbox.occupied = 0;
+    memory->mailbox.informations = (char **)malloc(sizeof(char*) * 20);
+    for(int i = 0; i < 20; i++){
+        memory->mailbox.informations[i] = (char*) malloc(sizeof(char) * MAX_LENGTH_OF_MESSAGE);
+    }
+    memory->mailbox.index_of_next_msg = 0;
+
 }
 
 void create_characters(memory_t * memory) {
