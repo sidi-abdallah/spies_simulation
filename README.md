@@ -25,3 +25,7 @@ In different terminals, run the following command in the same order :
 
 > ./bin/timer
 
+> ./bin/monitor
+
+Sometime the prgram doesn't run at the first time. In this case you press q and rerun.
+
