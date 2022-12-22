@@ -89,7 +89,7 @@ void get_next_cell(memory_t * memory, int destination_row, int destination_colum
                         return;
                 }
                 if(memory->map.cells[i][j].type == WASTELAND) {
-                    if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->counter_officer.location_row, memory->counter_officer.location_column, destination_row, destination_column)) {
+                    if(manhattan_distance(i, j, destination_row, destination_column) < minus_distance) {
                         minus_distance = manhattan_distance(i, j, destination_row, destination_column);
                         minus_row = i;
                         minus_column = j;
@@ -103,7 +103,8 @@ void get_next_cell(memory_t * memory, int destination_row, int destination_colum
 }
 
 void go_target(memory_t * memory) {
-    int next_row, next_column;
+    int next_row = memory->counter_officer.location_row;
+    int next_column = memory->counter_officer.location_column;
 
     if(memory->counter_officer.location_row != memory->counter_officer.target_row || memory->counter_officer.location_column != memory->counter_officer.target_column)
         get_next_cell(memory, memory->counter_officer.target_row, memory->counter_officer.target_column, &next_row, &next_column);
