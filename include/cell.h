@@ -102,6 +102,8 @@ struct supermarket_s {
 struct mailbox_s {
     int row;
     int column;
+    int index_of_next_msg;
+
     /**
      * liste de messages
     */
