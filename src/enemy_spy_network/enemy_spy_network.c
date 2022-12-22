@@ -45,7 +45,7 @@ void get_next_cell(memory_t *memory, int spie_index, int destination_row, int de
 
 int get_msg_from_company(memory_t *memory, int spie_index, int probability_of_success) {
     int next_row = 0, next_column = 0, decide_to_stole = rand()%100;
-    int rand_index_of_stolen_msg = rand()%memory->companies[memory->spies[spie_index].index_company_being_stolen].number_informations;
+    //int rand_index_of_stolen_msg = rand()%memory->companies[memory->spies[spie_index].index_company_being_stolen].number_informations;
     if(decide_to_stole < probability_of_success) {
         memory->spies[spie_index].location_row = next_row;
         memory->spies[spie_index].location_column = next_column;
@@ -154,7 +154,7 @@ void night_routine(memory_t *memory, int spie_index) {
                     memory->spies[spie_index].round_number_before_stole = 0;
                 }  
                 else {
-                    memory->spies[spie_index].go_to_put_msg_in_mailbox = 1;
+                    //memory->spies[spie_index].go_to_put_msg_in_mailbox = 1;
                 }
             }
             else {
@@ -182,7 +182,8 @@ void night_routine(memory_t *memory, int spie_index) {
 void day_routine(memory_t *memory, int spie_index) {
     int destination_row = 0, destination_col = 0, next_row = 0, next_column = 0;
     int hour = get_hour(memory);
-        if(hour == 8) {
+    int minutes = get_minutes(memory);
+        if(hour == 8 && minutes == 0) {
             memory->spies[spie_index].rand_day_routine = rand()%100;
         }
         if(memory->spies[spie_index].hour != hour ) {
@@ -242,15 +243,13 @@ void *spie_routine(void *args) {
 
     if(hour==17) {
         memory->spies[spie_index].rand_time_for_stoling  = (rand()%100) + 1;
-    //    printf("c'est 17h 00\n");
     }
     //In the night between 17H and 8H
-    //printf("memory->spies[spie_index].rand_time_for_stoling = %d\n", memory->spies[spie_index].rand_time_for_stoling);
     if(hour >= 17 || hour < 8) {
         memory->spies[spie_index].is_stolling = 1;
         memory->spies[spie_index].shopping = 0;
         memory->spies[spie_index].stroll_in_city = 0;
-      //  printf(" spie entre 17h et 8h\n");
+
         if(hour >= 17 && hour < 20 && memory->spies[spie_index].rand_time_for_stoling <= 2) {
             night_routine(memory, spie_index);
         }

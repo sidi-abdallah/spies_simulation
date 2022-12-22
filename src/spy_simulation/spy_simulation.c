@@ -118,8 +118,8 @@ void create_mailbox(memory_t * memory) {
     memory->mailbox.number_of_messages = 0;
     memory->mailbox.messages = NULL;
     memory->mailbox.occupied = 0;
-    memory->mailbox.informations = (char **)malloc(sizeof(char*) * 20);
-    for(int i = 0; i < 20; i++){
+    memory->mailbox.informations = (char **)malloc(sizeof(char*) * 200);
+    for(int i = 0; i < 200; i++){
         memory->mailbox.informations[i] = (char*) malloc(sizeof(char) * MAX_LENGTH_OF_MESSAGE);
     }
     memory->mailbox.index_of_next_msg = 0;
@@ -371,7 +371,7 @@ void new_round() {
     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd,0);
     memory->count += 1;
     memory->memory_has_changed = 1;
-    mesh_surveillance_network(memory);
+ //   mesh_surveillance_network(memory);
 
     munmap(memory, sizeof(memory_t));
     close(shmd);

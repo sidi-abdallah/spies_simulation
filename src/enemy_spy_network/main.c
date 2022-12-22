@@ -31,7 +31,7 @@ int main(void) {
 
     //Initialize spies
     for(int spie_index = 0; spie_index < SPIES_NUMBER; spie_index++) {
-        memory->spies[spie_index].rand_time_for_stoling = 0;
+        memory->spies[spie_index].rand_time_for_stoling = rand()%100;
         memory->spies[spie_index].round_number_before_stole = 0;
         memory->spies[spie_index].stroll_in_city = 0;
         memory->spies[spie_index].shopping = 0;
@@ -39,6 +39,8 @@ int main(void) {
         memory->spies[spie_index].rand_day_routine = 0;
         memory->spies[spie_index].random_supermarket = 0;
         memory->spies[spie_index].hour = get_hour(memory);
+        memory->spies[spie_index].go_to_put_msg_in_mailbox = 0;
+        memory->spies[spie_index].nb_of_stolen_companies = 0;
         memory->spies[spie_index].companies_stolen_yet = (int*)calloc(MAX_COMPANIES, sizeof(int));
     }
     //Initialize case_officer
