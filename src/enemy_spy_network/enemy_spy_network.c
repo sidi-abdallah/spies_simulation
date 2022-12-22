@@ -38,9 +38,11 @@ void get_next_cell(memory_t *memory, int spie_index, int destination_row, int de
         }
     } 
     
-    random_cell = rand()%count_reachable_cells;
-    *next_row = reachable_cells_row[random_cell];
-    *next_column = reachable_cells_column[random_cell];
+    if(count_reachable_cells){
+        random_cell = rand()%count_reachable_cells;
+        *next_row = reachable_cells_row[random_cell];
+        *next_column = reachable_cells_column[random_cell];
+    }
 }
 
 int get_msg_from_company(memory_t *memory, int spie_index, int probability_of_success) {
@@ -75,6 +77,9 @@ int get_msg_from_company(memory_t *memory, int spie_index, int probability_of_su
 
 
 void night_routine(memory_t *memory, int spie_index) {
+    int company_row = 0, company_col = 0, next_row = 0, next_column = 0;
+     
+     //Waiting to void accessing the mailbox simultaneously
      switch(spie_index){
         
         case 1:
@@ -87,8 +92,7 @@ void night_routine(memory_t *memory, int spie_index) {
             break;
     }
 
-    int company_row = 0, company_col = 0, next_row = 0, next_column = 0;
-
+    //Generating randomly an index of a company 
     if(memory->spies[spie_index].round_number_before_stole == 0 && !memory->spies[spie_index].go_to_put_msg_in_mailbox) {
         memory->spies[spie_index].index_company_being_stolen  = rand()%MAX_COMPANIES;
         while(memory->spies[spie_index].companies_stolen_yet[memory->spies[spie_index].index_company_being_stolen]) {
@@ -97,16 +101,17 @@ void night_routine(memory_t *memory, int spie_index) {
         memory->spies[spie_index].companies_stolen_yet[memory->spies[spie_index].index_company_being_stolen] = 1;
         memory->spies[spie_index].round_number_before_stole++;
     
+    //Processus of stoling (tracking, fake message or get in a company) 
     }else {
         company_row = memory->companies[memory->spies[spie_index].index_company_being_stolen].row;
         company_col = memory->companies[memory->spies[spie_index].index_company_being_stolen].column;
         get_next_cell(memory, spie_index, company_row, company_col, &next_row, &next_column);
         if(memory->spies[spie_index].round_number_before_stole <= 12 && next_row == company_row && next_column == company_col) {
-            if(memory->spies[spie_index].round_number_before_stole < 12) {
+            if(memory->spies[spie_index].round_number_before_stole < 12) { // Tracking 12 rounds
                 memory->spies[spie_index].round_number_before_stole++;
             
             } else {
-                if(!get_msg_from_company(memory, spie_index, 86)) {
+                if(!get_msg_from_company(memory, spie_index, 86)) { //Failing to steal information so go to put a fake message
 
                     get_next_cell(memory, spie_index, memory->mailbox.row, memory->mailbox.column, &next_row, &next_column);
                     if(next_row == memory->mailbox.row && next_column == memory->mailbox.column) {
@@ -124,7 +129,7 @@ void night_routine(memory_t *memory, int spie_index) {
                         memory->spies[spie_index].location_column = next_column;
                     }
                 }
-                else {  
+                else {  //The message was got so go to mailbox to put it
                      memory->spies[spie_index].go_to_put_msg_in_mailbox = 1;
                 }
                 memory->spies[spie_index].round_number_before_stole++;
@@ -164,7 +169,7 @@ void night_routine(memory_t *memory, int spie_index) {
             }
         }
         else {
-            if(memory->spies[spie_index].round_number_before_stole >=19)  {
+            if(memory->spies[spie_index].round_number_before_stole >=19)  { // Quit the company at the 19 round
                 memory->spies[spie_index].round_number_before_stole = 0;
                 memory->spies[spie_index].go_to_put_msg_in_mailbox = 0;
 
@@ -186,7 +191,7 @@ void day_routine(memory_t *memory, int spie_index) {
         if(hour == 8 && minutes == 0) {
             memory->spies[spie_index].rand_day_routine = rand()%100;
         }
-        if(memory->spies[spie_index].hour != hour ) {
+        if(memory->spies[spie_index].hour != hour ) { //Change desicion every hour
             memory->spies[spie_index].hour = hour;
             memory->spies[spie_index].rand_day_routine = rand()%100;
             memory->spies[spie_index].shopping = 0;
@@ -194,19 +199,18 @@ void day_routine(memory_t *memory, int spie_index) {
             memory->spies[spie_index].stay_at_home = 0;
         }
         else {
-            if(memory->spies[spie_index].rand_day_routine <= 30) {
+            if(memory->spies[spie_index].rand_day_routine <= 30) { // Stay at home
                 destination_row = memory->spies[spie_index].home_row;
                 destination_col = memory->spies[spie_index].home_column;
                 memory->spies[spie_index].stay_at_home = 1;
-             //   printf("spie chez lui\n");
                 memory->spies[spie_index].shopping = 0;
                 memory->spies[spie_index].stroll_in_city = 0;
             } 
+            //Go to supermarket
             else if(memory->spies[spie_index].rand_day_routine > 30 && memory->spies[spie_index].rand_day_routine < 40) {
                 if(memory->spies[spie_index].shopping == 0) {
                     memory->spies[spie_index].random_supermarket = rand()%MAX_SUPERMARKETS;
                 }
-               // printf("spie supermarché\n");
 
                 destination_row = memory->supermarkets[memory->spies[spie_index].random_supermarket].row;
                 destination_col = memory->supermarkets[memory->spies[spie_index].random_supermarket].column;
@@ -214,6 +218,7 @@ void day_routine(memory_t *memory, int spie_index) {
                 memory->spies[spie_index].stay_at_home = 0;
                 memory->spies[spie_index].stroll_in_city = 0;
             } else {
+                //Strolling in city
                 destination_row = rand()%6;
                 destination_col = rand()%6;
                 memory->spies[spie_index].stroll_in_city = 1;
@@ -275,8 +280,6 @@ void *spie_routine(void *args) {
         day_routine(memory, spie_index);
     }
 
-    //recuperation du contexteq
-    
     arguments->memory = memory;
     arguments->memory->memory_has_changed = 1;
 
@@ -448,9 +451,11 @@ void get_next_cell_case_officer(memory_t *memory, int destination_row, int desti
         } 
     } 
     else {
-        random_cell = rand()%count_reachable_cells;
-        *next_row = reachable_cells_row[random_cell];
-        *next_column = reachable_cells_column[random_cell];
+        if(count_reachable_cells){
+            random_cell = rand()%count_reachable_cells;
+            *next_row = reachable_cells_row[random_cell];
+            *next_column = reachable_cells_column[random_cell];
+        }
     }
 }
 

@@ -47,7 +47,7 @@ void sent_sig(void) {
     }
     kill(pid_spy_simulation, SIGKILL);
     //To DO other processus kill
-    // kill(memory->pid_spy_simulation, SIGALRM);
-    // kill(memory->pid_spy_simulation, SIGALRM);
-    // kill(memory->pid_spy_simulation, SIGALRM);
+     //kill(memory->citizen_manager_pid, SIGTERM);
+    // kill(memory->counter_intelligence_officer, SIGTERM);
+    // kill(memory->pid_spy_simulation, SIGTERM);
 }
