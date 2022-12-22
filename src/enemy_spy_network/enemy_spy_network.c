@@ -24,19 +24,39 @@ void get_next_cell(memory_t *memory, int spie_index, int destination_row, int de
     
     for(i = memory->spies[spie_index].location_row - 1; i <= memory->spies[spie_index].location_row + 1; i++) {
         for(j = memory->spies[spie_index].location_column - 1; j <= memory->spies[spie_index].location_column + 1; j++) {
-            if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS ) {
-                if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->spies[spie_index].location_row, memory->spies[spie_index].location_column, destination_row, destination_column)) {
-                    reachable_cells_row[count_reachable_cells] = i;
-                    reachable_cells_column[count_reachable_cells] = j;
-                    count_reachable_cells += 1;
+            if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS) {
+                if(i == destination_row && j == destination_column) {
+                        *next_row = i;
+                        *next_column = j;
+                        return;
+                }
+                if(memory->map.cells[i][j].type == WASTELAND) {
+                    if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->spies[spie_index].location_row, memory->spies[spie_index].location_column, destination_row, destination_column)) {
+                        reachable_cells_row[count_reachable_cells] = i;
+                        reachable_cells_column[count_reachable_cells] = j;
+                        count_reachable_cells += 1;
+                    }
                 }
             }
         }
+    }
+
+    if(count_reachable_cells == 0) {
+        for(i = memory->spies[spie_index].location_row - 1; i <= memory->spies[spie_index].location_row + 1; i++) {
+            for(j = memory->spies[spie_index].location_column - 1; j <= memory->spies[spie_index].location_column + 1; j++) {
+                if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS && memory->map.cells[i][j].type == WASTELAND) {
+                    *next_row = i;
+                    *next_column = j;
+                    return;
+                }
+            }
+        } 
     } 
-    
-    random_cell = rand()%count_reachable_cells;
-    *next_row = reachable_cells_row[random_cell];
-    *next_column = reachable_cells_column[random_cell];
+    else {
+        random_cell = rand()%count_reachable_cells;
+        *next_row = reachable_cells_row[random_cell];
+        *next_column = reachable_cells_column[random_cell];
+    }
 }
 
 void night_routine(memory_t *memory, int spie_index) {
@@ -252,6 +272,13 @@ void case_officer_routine(memory_t * memory) {
     int next_row, next_column;
 
     if(hour == 0 && minutes == 0) { //Initialize times to go out
+        memory->case_officer.outing_mailbox_1 = create_time((rand()%9)+8, (rand()%6)*10);
+        memory->case_officer.outing_mailbox_2 = create_time((rand()%9)+8, (rand()%6)*10);
+        while(abs(memory->case_officer.outing_mailbox_1.hour-memory->case_officer.outing_mailbox_2.hour) < 2) {
+            memory->case_officer.outing_mailbox_2 = create_time((rand()%9)+8, (rand()%6)*10);
+        }
+        memory->case_officer.outing_supermarket = create_time((rand()%2)+17, (rand()%6)*10);
+        memory->case_officer.send_messages = create_time((rand()%2)+22, (rand()%6)*10);
     }
 
     int hour_outing_mailbox1 = memory->case_officer.outing_mailbox_1.hour;
@@ -274,15 +301,20 @@ void case_officer_routine(memory_t * memory) {
         if(memory->case_officer.going_to_mailbox == 1) { //Need to go to mailbox
             get_next_cell_case_officer(memory, memory->mailbox.row, memory->mailbox.column, &next_row, &next_column);
         }
-        if(memory->mailbox.occupied == 1) { //Mailbox occupied
+        if(memory->case_officer.going_to_mailbox == 1 && memory->mailbox.occupied == 1) { //Mailbox occupied
             next_row = location_row; //Stay at the same cell
             next_column = location_column;
         }
-        if(location_row == memory->mailbox.row && location_column == memory->mailbox.column) { //At mailbox
+        if(memory->case_officer.going_to_mailbox == 1 && location_row == memory->mailbox.row && location_column == memory->mailbox.column) { //At mailbox
             memory->case_officer.going_to_mailbox = 0;
-            //case_officer_get_message(memory);
+            memory->case_officer.at_mailbox = 1;
+            memory->mailbox.occupied = 1;
+            case_officer_get_message(memory);
         } 
         if(memory->case_officer.going_to_mailbox == 0) { //Need to go home
+            if(memory->case_officer.at_mailbox == 1){
+                memory->mailbox.occupied = 0;
+            }
             get_next_cell_case_officer(memory, memory->case_officer.home_row, memory->case_officer.home_column, &next_row, &next_column);
         }
     }
@@ -310,7 +342,7 @@ void case_officer_routine(memory_t * memory) {
     else {
         get_next_cell_case_officer(memory, memory->case_officer.home_row, memory->case_officer.home_column, &next_row, &next_column);
     }
-    // printf("%d:%d [%d,%d]=>[%d,%d] (H(%d,%d) M(%d,%d))\n",hour, minutes, location_row, location_column, next_row, next_column, memory->case_officer.home_row, memory->case_officer.home_column, memory->mailbox.row, memory->mailbox.column);
+    printf("%d:%d [%d,%d]=>[%d,%d] (H(%d,%d) M(%d,%d))\n",hour, minutes, location_row, location_column, next_row, next_column, memory->case_officer.home_row, memory->case_officer.home_column, memory->mailbox.row, memory->mailbox.column);
     memory->case_officer.location_row = next_row;
     memory->case_officer.location_column = next_column;
 }

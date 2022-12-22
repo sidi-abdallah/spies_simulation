@@ -50,6 +50,7 @@ int main(void) {
     memory->case_officer.random_supermarket = 0;
     memory->case_officer.going_to_mailbox = 0;
     memory->case_officer.going_to_supermarket = 0;
+    memory->case_officer.at_mailbox = 0;
 
     munmap(memory, sizeof(memory_t));
     close(shmd);

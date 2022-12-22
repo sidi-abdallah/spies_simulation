@@ -97,6 +97,7 @@ struct case_officer_s {
     int random_supermarket;
     int going_to_mailbox;
     int going_to_supermarket;
+    int at_mailbox;
     int number_of_messages;
     char **messages;
 };
