@@ -22,13 +22,11 @@ void get_next_cell(memory_t *memory, int citizen_index, int destination_row, int
                         *next_column = j;
                         return;
                 }
-                if(memory->map.cells[i][j].type == WASTELAND) {
                     if(manhattan_distance(i, j, destination_row, destination_column) < manhattan_distance(memory->citizens[citizen_index].location_row, memory->citizens[citizen_index].location_column, destination_row, destination_column)) {
                         reachable_cells_row[count_reachable_cells] = i;
                         reachable_cells_column[count_reachable_cells] = j;
                         count_reachable_cells += 1;
                     }
-                }
             }
         }
     }
@@ -36,7 +34,7 @@ void get_next_cell(memory_t *memory, int citizen_index, int destination_row, int
     if(count_reachable_cells == 0) {
         for(i = memory->citizens[citizen_index].location_row - 1; i <= memory->citizens[citizen_index].location_row + 1; i++) {
             for(j = memory->citizens[citizen_index].location_column - 1; j <= memory->citizens[citizen_index].location_column + 1; j++) {
-                if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS && memory->map.cells[i][j].type == WASTELAND) {
+                if(i >= 0 && i < MAX_ROWS && j >= 0 && j < MAX_COLUMNS) {
                     *next_row = i;
                     *next_column = j;
                     return;

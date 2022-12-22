@@ -332,7 +332,7 @@ void mesh_surveillance_network(memory_t * memory) {
                     char buff[20];
                     sprintf(buff, "%d %d %d", characters[i].id, characters[i].row, characters[i].column);
                     if(write(fd, buff, strlen(buff)+1) != -1){
-                        kill(memory->counter_intelligence_officer_pid, SIGALRM);
+                        // kill(memory->counter_intelligence_officer_pid, SIGALRM);
                     }
                     close(fd);
                 }
