@@ -359,7 +359,15 @@ void get_next_cell_case_officer(memory_t *memory, int destination_row, int desti
 }
 
 void case_officer_get_message(memory_t *memory) {
-
+    if(memory->mailbox.number_of_messages > 0) {
+        for(int i=0; i<memory->mailbox.number_of_messages; i++) {
+            ++memory->case_officer.number_of_messages;
+            memory->case_officer.messages = realloc(memory->case_officer.messages, memory->case_officer.number_of_messages * sizeof(char*));
+            memory->case_officer.messages[memory->case_officer.number_of_messages-1] = memory->mailbox.messages[i];
+        }
+        memory->mailbox.number_of_messages = 0;
+        memory->mailbox.messages = NULL;
+    }
 }
 
 // // int * available_companies = calloc(MAX_COMPANIES, sizeof(int));

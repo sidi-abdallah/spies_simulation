@@ -104,9 +104,9 @@ void *make_round(void * args) {
     memory->citizens[citizen_index].location_row = next_row;
     memory->citizens[citizen_index].location_column = next_column;
 
-    if(arguments->citizen_index == 40) {
-        printf("(%d:%d) : [%d,%d] => [%d,%d] (H[%d,%d]W[%d,%d])\n", hour, minutes, location_row, location_column, next_row, next_column, home_row, home_column, work_row, work_column);
-    }
+    // if(arguments->citizen_index == 40) {
+    //     printf("(%d:%d) : [%d,%d] => [%d,%d] (H[%d,%d]W[%d,%d])\n", hour, minutes, location_row, location_column, next_row, next_column, home_row, home_column, work_row, work_column);
+    // }
 
     if(memory->citizens[citizen_index].location_row == memory->citizens[citizen_index].home_row && memory->citizens[citizen_index].location_column == memory->citizens[citizen_index].home_column) {
         memory->citizens_at_home += 1;
