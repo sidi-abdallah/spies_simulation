@@ -18,7 +18,6 @@
 #include "timer.h"
 
 
-//créer un sémaphore et un mémoire partagé de test
 pid_t get_pids_processes(void) {
     memory_t *memory = malloc(sizeof(memory_t)); 
     pid_t spy_simulation_pid;
@@ -43,10 +42,8 @@ void sent_sig(void) {
     for(int round = 0; round < ROUND_NUMBER; round++) {
        //if(/*reseau dessocié*/0) kill(pid_spy_simulation, SIGTERM);
        /*else*/ 
-       // printf("%d\n", round);
        kill(pid_spy_simulation, SIGALRM);
-        usleep(DEFAULT_SPAN_ROUND);
-        //set_timer();
+       usleep(DEFAULT_SPAN_ROUND);
     }
     kill(pid_spy_simulation, SIGKILL);
     //To DO other processus kill

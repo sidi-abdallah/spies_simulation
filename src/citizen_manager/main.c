@@ -17,22 +17,32 @@ int main() {
     srand(time(NULL));
 
     memory_t *memory;
+    memory = malloc(sizeof(memory_t));
     sem_t *sem; 
     int shmd;
     int i;
     int count = 0;
-
     pthread_t *t;
     args_t *args;
 
+    sem = open_semaphore("spy_simulation-sem");
+    
+       
+    P(sem);
+    shmd = shm_open("/spy_simulation",O_RDWR,0666);
+    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
+    memory->citizens_at_home = NUMBER_OF_CITIZENS;
+    memory->citizens_at_work = 0;
+    memory->citizens_walking = 0;
+    munmap(memory, sizeof(memory_t));
+    close(shmd);
+    V(sem);
     while (1) {
         sem = open_semaphore("spy_simulation-sem");
         P(sem);
         shmd = shm_open("/spy_simulation",O_RDWR,0666);
         memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE,MAP_SHARED, shmd,0);
-        memory->citizens_at_home = 0;
-        memory->citizens_at_work = 0;
-        memory->citizens_walking = 0;
+       
         if (memory->count != count) {
             count = memory->count;
             t = (pthread_t *) malloc(sizeof(pthread_t) * NUMBER_OF_CITIZENS);

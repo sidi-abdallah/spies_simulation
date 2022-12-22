@@ -42,14 +42,14 @@ int main(void) {
         memory->spies[spie_index].companies_stolen_yet = (int*)calloc(MAX_COMPANIES, sizeof(int));
     }
     //Initialize case_officer
-    memory->case_officer.outing_mailbox_1 = create_time(8,0);
-    memory->case_officer.outing_mailbox_2 = create_time(12,0);
-    memory->case_officer.outing_supermarket = create_time(17,0);
-    memory->case_officer.send_messages = create_time(22,0);
-    memory->case_officer.random_supermarket = 0;
-    memory->case_officer.going_to_mailbox = 0;
-    memory->case_officer.going_to_supermarket = 0;
-    memory->case_officer.at_mailbox = 0;
+    // memory->case_officer.outing_mailbox_1 = create_time(8,0);
+    // memory->case_officer.outing_mailbox_2 = create_time(12,0);
+    // memory->case_officer.outing_supermarket = create_time(17,0);
+    // memory->case_officer.send_messages = create_time(22,0);
+    // memory->case_officer.random_supermarket = 0;
+    // memory->case_officer.going_to_mailbox = 0;
+    // memory->case_officer.going_to_supermarket = 0;
+    // memory->case_officer.at_mailbox = 0;
 
     munmap(memory, sizeof(memory_t));
     close(shmd);
@@ -57,77 +57,80 @@ int main(void) {
 
 
     sem = open_semaphore("spy_simulation-sem");
-    P(sem);
-    shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-    memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
+    // P(sem);
+    // shmd = shm_open("/spy_simulation", O_RDWR, 0666);
+    // memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
     
-    if(fork() == 0) {
-        if(fork() == 0) {
-            if(fork() == 0) {
-                memory->case_officer_pid = getpid();
-                munmap(memory, sizeof(memory_t));
-                close(shmd);
-                V(sem);
-                main_case_officer();
-            }
-            else {
-                memory->spies_pid[2] = getpid();
-                munmap(memory, sizeof(memory_t));
-                close(shmd);
-                V(sem);
-                main_spy(2);
-                wait(NULL);
-            }
-        }
-        else {
-            memory->spies_pid[1] = getpid();
-            munmap(memory, sizeof(memory_t));
-            close(shmd);
-            V(sem);
-            main_spy(1); 
-            wait(NULL);
-        }
-    }
-    else {
-        memory->spies_pid[0] = getpid();
-        munmap(memory, sizeof(memory_t));
-        close(shmd);
-        V(sem);
-        main_spy(0);
-        wait(NULL);
-    }
-
-    // while (1)
-    // {
-    //     sem = open_semaphore("spy_simulation-sem");
-    //     P(sem);
-    //     shmd = shm_open("/spy_simulation", O_RDWR, 0666);
-    //     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-        
-    //     if (count != memory->count)
-    //     {
-    //         count = memory->count;
-    //         t = (pthread_t *)malloc(sizeof(pthread_t) * SPIES_NUMBER);
-    //         args = (args_spy *)malloc(sizeof(args_spy) * SPIES_NUMBER);
-    //         for (i = 0; i < SPIES_NUMBER; i++)
-    //         {
-    //             args[i].spie_index = i;
-    //             args[i].memory = memory;
+    // if(fork() == 0) {
+    //     if(fork() == 0) {
+    //         if(fork() == 0) {
+    //             memory->case_officer_pid = getpid();
+    //             munmap(memory, sizeof(memory_t));
+    //             close(shmd);
+    //             V(sem);
+    //             main_case_officer();
     //         }
-
-    //         for (i = 0; i < SPIES_NUMBER; i++)
-    //         {
-    //             pthread_create(&t[i], NULL, spie_routine, &args[i]);
-    //         }
-
-    //         for (i = 0; i < SPIES_NUMBER; i++)
-    //         {
-    //             pthread_join(t[i], NULL);
+    //         else {
+    //             memory->spies_pid[2] = getpid();
+    //             munmap(memory, sizeof(memory_t));
+    //             close(shmd);
+    //             V(sem);
+    //             main_spy(2);
+    //             wait(NULL);
     //         }
     //     }
+    //     else {
+    //         memory->spies_pid[1] = getpid();
+    //         munmap(memory, sizeof(memory_t));
+    //         close(shmd);
+    //         V(sem);
+    //         main_spy(1); 
+    //         wait(NULL);
+    //     }
+    // }
+    // else {
+    //     memory->spies_pid[0] = getpid();
     //     munmap(memory, sizeof(memory_t));
     //     close(shmd);
     //     V(sem);
+    //     main_spy(0);
+    //     wait(NULL);
     // }
+
+    int count = 0;
+    pthread_t *t;
+    args_spy *args;
+    while (1)
+    {
+        sem = open_semaphore("spy_simulation-sem");
+        P(sem);
+        shmd = shm_open("/spy_simulation", O_RDWR, 0666);
+        memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
+        
+        if (count != memory->count)
+        {
+            count = memory->count;
+            t = (pthread_t *)malloc(sizeof(pthread_t) * SPIES_NUMBER);
+            args = (args_spy *)malloc(sizeof(args_spy) * SPIES_NUMBER);
+            for (int i = 0; i < SPIES_NUMBER; i++)
+            {
+                args[i].spie_index = i;
+                args[i].memory = memory;
+            }
+
+            for (int i = 0; i < SPIES_NUMBER; i++)
+            {
+                pthread_create(&t[i], NULL, spie_routine, &args[i]);
+            }
+
+            for (int i = 0; i < SPIES_NUMBER; i++)
+            {
+                pthread_join(t[i], NULL);
+            }
+        }
+        munmap(memory, sizeof(memory_t));
+        close(shmd);
+        V(sem);
+    }
     return 0;
 }

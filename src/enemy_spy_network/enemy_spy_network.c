@@ -51,7 +51,7 @@ int get_msg_from_company(memory_t *memory, int spie_index, int probability_of_su
         memory->spies[spie_index].location_column = next_column;
         memory->spies[spie_index].nb_of_stolen_companies++;
       
-        strcpy(memory->spies[spie_index].stolen_message_content, memory->companies[memory->spies[spie_index].index_company_being_stolen].informations[rand_index_of_stolen_msg]);
+       // strcpy(memory->spies[spie_index].stolen_message_content, memory->companies[memory->spies[spie_index].index_company_being_stolen].informations[rand_index_of_stolen_msg]);
         int random_importance_msg = rand() % 100 + 1;
         if(random_importance_msg == 1){
             memory->spies[spie_index].message_importance = CRUTIAL;
@@ -89,7 +89,7 @@ void night_routine(memory_t *memory, int spie_index) {
 
     int company_row = 0, company_col = 0, next_row = 0, next_column = 0;
 
-    if(memory->spies[spie_index].round_number_before_stole == 0 && ! memory->spies[spie_index].go_to_put_msg_in_mailbox) {
+    if(memory->spies[spie_index].round_number_before_stole == 0 && !memory->spies[spie_index].go_to_put_msg_in_mailbox) {
         memory->spies[spie_index].index_company_being_stolen  = rand()%MAX_COMPANIES;
         while(memory->spies[spie_index].companies_stolen_yet[memory->spies[spie_index].index_company_being_stolen]) {
             memory->spies[spie_index].index_company_being_stolen  = rand()%MAX_COMPANIES;
@@ -113,7 +113,7 @@ void night_routine(memory_t *memory, int spie_index) {
             
                             memory->spies[spie_index].location_row = next_row;
                             memory->spies[spie_index].location_column = next_column;
-                            strcpy(memory->mailbox.informations[memory->mailbox.index_of_next_msg], memory->spies[spie_index].stolen_message_content);
+                           // strcpy(memory->mailbox.informations[memory->mailbox.index_of_next_msg], memory->spies[spie_index].stolen_message_content);
                             memory->spies[spie_index].go_to_put_msg_in_mailbox = 0;
                             memory->mailbox.index_of_next_msg++;
                     
@@ -135,7 +135,7 @@ void night_routine(memory_t *memory, int spie_index) {
             if(next_row == memory->mailbox.row && next_column == memory->mailbox.column) {
                    memory->spies[spie_index].location_row = next_row;
                    memory->spies[spie_index].location_column = next_column;
-                   strcpy(memory->mailbox.informations[memory->mailbox.index_of_next_msg], memory->spies[spie_index].stolen_message_content);
+                 //  strcpy(memory->mailbox.informations[memory->mailbox.index_of_next_msg], memory->spies[spie_index].stolen_message_content);
                    memory->spies[spie_index].go_to_put_msg_in_mailbox = 0;
                    memory->mailbox.index_of_next_msg++;
             }

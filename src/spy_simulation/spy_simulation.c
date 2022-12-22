@@ -279,10 +279,8 @@ void signal_handler(int signum) {
             new_round();
             break;
         case SIGTERM:
-            //printf("signal SIGTERM\n");
             break;
          case SIGINT:
-            //printf("signal SIGINT\n");
             exit(0);
         default:
             break;
@@ -366,13 +364,12 @@ character_t * get_characters(memory_t * memory) {
 void new_round() {
     memory_t * memory; 
     sem_t *sem;
-    sem = create_and_open_semaphore("spy_simulation-sem");
+    sem = open_semaphore("spy_simulation-sem");
     
     P(sem);
     int shmd = shm_open("/spy_simulation", O_CREAT | O_RDWR, (mode_t)0600);
     memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd,0);
     memory->count += 1;
-    printf("round n°%d\n", memory->count);
     memory->memory_has_changed = 1;
     mesh_surveillance_network(memory);
 

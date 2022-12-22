@@ -1,9 +1,7 @@
 #include "timer.h"
 #include <stdio.h>
 
-int main(int argc, char * argv[]){
-    argc = argc;
-    argv[0] = argv[0];
+int main(void){
     sent_sig();
     return 0;
 }
