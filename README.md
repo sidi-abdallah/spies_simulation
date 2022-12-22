@@ -9,7 +9,7 @@
 ## Install the program
 
 Run the following commands :
-> make distclean
+> make distclean //To make sure there are no stains left
 
 > make
 
