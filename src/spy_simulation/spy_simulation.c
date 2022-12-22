@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include <sys/mman.h> 
+#include <string.h>
 #include <sys/stat.h>
 #include "posix_semaphore.h"
 #include "functions.h"
@@ -321,7 +322,15 @@ void mesh_surveillance_network(memory_t * memory) {
                 //If he is near a company for 10 rounds, send a SIGALARM
                 if(memory->mesh_surveillance_network.near_company[characters[i].id] >= NUMBER_SUSPICIOUS_ROUND) {
                     memory->mesh_surveillance_network.id_suspicious_character = characters[i].id;
-                    //kill(memory->counter_intelligence_officer_pid, SIGALRM);
+                    int fd;
+                    mkfifo("counterintellifence_officer", 0666);
+                    fd = open("counterintellifence_officer", O_RDWR);
+                    char buff[20];
+                    sprintf(buff, "%d %d %d", characters[i].id, characters[i].row, characters[i].column);
+                    if(write(fd, buff, strlen(buff)+1) != -1){
+                        kill(memory->counter_intelligence_officer_pid, SIGALRM);
+                    }
+                    close(fd);
                 }
             }
         }

@@ -14,7 +14,7 @@ endif
 
 .PHONY: all clean distclean
 
-all: bin/spy_simulation bin/timer bin/monitor bin/citizen_manager bin/enemy_spy_network bin/conterintelligence_officer
+all: bin/spy_simulation bin/timer bin/monitor bin/citizen_manager bin/enemy_spy_network bin/counterintelligence_officer
 	
 # ----------------------------------------------------------------------------
 # MONITOR
@@ -107,7 +107,7 @@ bin/counterintelligence_officer : src/counterintelligence_officer/main.o \
 					  			  src/common/posix_semaphore.o 
 	$(CC) $^ -o $@ $(LDFLAGS)
 
-src/counterintelligence_officer/main.o : src/counterintelligence_officer/main.c include/conterintelligence_officer.h
+src/counterintelligence_officer/main.o : src/counterintelligence_officer/main.c include/counterintelligence_officer.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ -c
 
 src/counterintelligence_officer/counterintelligence_officer.o : src/counterintelligence_officer/counterintelligence_officer.c include/counterintelligence_officer.h

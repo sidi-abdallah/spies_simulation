@@ -7,7 +7,7 @@
 
 #include "posix_semaphore.h"
 #include "memory.h"
-#include "conterintelligence_officer.h"
+#include "counterintelligence_officer.h"
 
 int main() {
     memory_t * memory;
@@ -35,8 +35,8 @@ int main() {
         shmd = shm_open("/spy_simulation", O_RDWR, 0666);
         memory = mmap(NULL, sizeof(memory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
 
-        if(1){//If has already a target
-
+        if(memory->counter_officer.has_target == 1){
+            go_target(memory);
         }
 
         munmap(memory, sizeof(memory_t));

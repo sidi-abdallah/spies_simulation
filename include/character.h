@@ -107,6 +107,10 @@ struct counter_officer_s {
     int health_points;
     int location_row;
     int location_column;
+    int has_target;
+    int target_index;
+    int target_row;
+    int target_column;
 };
 
 #endif /* CHARACTER_H */
